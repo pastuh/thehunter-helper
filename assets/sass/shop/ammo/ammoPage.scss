@@ -1,0 +1,28 @@
+.ammo-info-text {
+  font-size: 12px;
+  background-color: #d9edf7;
+  border-color: #bce8f1;
+  color: #3a87ad;
+  border-radius: 10px;
+  padding: 1px 7px;
+}
+
+.info-position {
+  float: right;
+}
+
+.btn-primary.disabledBuyButton {
+  background: #161616;
+}
+
+.btn-primary.disabledBuyButton:hover {
+  background: #111;
+}
+
+.btn-primary.newBuyButton {
+  background: #4c9e20;
+}
+
+.btn-primary.newBuyButton:hover {
+  background: #40861b;
+}

@@ -1,0 +1,323 @@
+.statistics-info-text {
+  font-size: 12px;
+  color: #555;
+}
+
+.titlebar-duration {
+  font-size: 20px !important;
+  margin-bottom: 20px !important;
+  text-shadow: rgba(255, 255, 255, 0.5) 0px 1px 0px;
+  background-clip: padding-box;
+  border-color: rgb(188, 232, 241);
+  padding: 10px !important;
+  border-radius: 3px;
+  color: rgb(34, 34, 34);
+  background-color: rgb(204, 204, 204);
+}
+
+.hunterImg-hover {
+  position: absolute;
+  background: #222;
+  max-width: 90px;
+}
+
+.hunterDiagram-hover {
+  background: #222;
+  position: absolute;
+  width: 150px;
+  height: 150px;
+}
+
+.hunterDiagram-hover img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.thumbnail-item {
+  position: relative;
+}
+
+.tooltipImg {
+  display: none;
+  position: absolute;
+}
+
+.tooltipImg span.overlay {
+  background: url(images/overlay.png) no-repeat;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  display: block;
+  width: 25px;
+  height: 250px;
+}
+
+.stats-panel h4 {
+  position: relative;
+  font-size: 24px;
+  color: rgb(255, 255, 255);
+  box-shadow: rgba(0, 0, 0, 0.4) -2px 4px 2px;
+  cursor: pointer;
+  padding: 15px;
+  background: #222;
+  border-top: 1px solid #424043;
+  margin-bottom: 1px;
+  border-left: 5px solid #f9560d;
+}
+
+.statistics-main .icon-angle-down {
+  float: right;
+  position: absolute;
+  top: 0px;
+  right: -16px;
+  height: 100%;
+  color: rgb(245, 246, 247);
+  padding: 0px;
+  margin: 0px 0px 0px 28px;
+  background: rgb(249, 55, 13);
+  width: 14px;
+  font-size: 14px;
+}
+
+.statistics-main .icon-angle-down:hover {
+  background: #2f2f2f;
+}
+
+.hunterHelperTable.tabulator .tabulator-header .tabulator-col .tabulator-col-content .tabulator-col-title {
+  white-space: normal;
+}
+
+.hunterHelperTable.tabulator .hunterHelperTableTitle {
+  color: #888;
+}
+
+.hunterHelperTable.tabulator .confirmedAnimalTitle {
+  color: #E7BE3D;
+}
+
+.hunterHelperTable.tabulator .tabulator-tableHolder {
+  box-shadow: #373635 -2px 4px 2px;
+}
+
+.hunterHelperTable.tabulator {
+  background-color: #161616;
+  border: none;
+  border-radius: 3px;
+}
+
+.hunterHelperTable.tabulator .tabulator-header {
+  background-color: #333;
+  color: #eee;
+  border-bottom: 1px solid #373635;
+}
+
+.hunterHelperTable.tabulator .tabulator-footer {
+  background-color: transparent;
+  user-select: auto;
+  border-top: 1px solid #373635;
+}
+
+.hunterHelperTable.tabulator .tabulator-footer .tabulator-calcs-holder {
+  background: #111111 !important;
+  border-top: 1px solid #383736;
+}
+
+.hunterHelperTable.tabulator .tabulator-footer .tabulator-calcs-holder .tabulator-row {
+  background: #111111 !important;
+}
+
+.hunterHelperTable.tabulator .tabulator-header .tabulator-col {
+  text-align: center;
+  background: #222222;
+  border-right: 1px solid #161616;
+}
+
+.hunterHelperTable.tabulator .tabulator-row .tabulator-cell {
+  text-align: center;
+  min-height: 40px !important;
+  border-right: none;
+}
+
+.hunterHelperTable.tabulator .tabulator-footer .tabulator-row .tabulator-cell {
+  min-height: 40px !important
+}
+
+.hunterHelperTable.tabulator .tabulator-header .tabulator-col.tabulator-sortable:hover {
+  background-color: #111111;
+  border-bottom: 5px solid #f9560d;
+  height: 32px;
+}
+
+.hunterHelperTable.tabulator .tabulator-header .tabulator-col .tabulator-col-content {
+  padding-top: 6px;
+  font-weight: 100;
+  color: #eee;
+}
+
+.hunterHelperTable.tabulator .tabulator-tableHolder .tabulator-table {
+  background-color: transparent;
+  color: #bbb;
+}
+
+.hunterHelperTable.tabulator .tabulator-row {
+  background-color: transparent;
+  min-height: 40px;
+  border-top: 1px solid #222;
+}
+
+.hunterHelperTable.tabulator .tabulator-row:hover {
+  background-color: #222 !important;
+}
+
+.hunterHelperTable.tabulator .tabulator-row.tabulator-selectable:hover {
+  background-color: #000;
+}
+
+.hunterHelperTable.tabulator .tabulator-row.tabulator-row-even {
+  background-color: #111111;
+}
+
+.tabulator-col-title {
+  padding-right: 0 !important;
+}
+
+.tabulator .tabulator-header .tabulator-col .tabulator-col-content .tabulator-header-menu-button {
+  padding-right: 25px !important;
+}
+
+.tabulator .tabulator-header .tabulator-col .tabulator-col-content .tabulator-col-sorter {
+  bottom: 20px !important;
+  right: -3px !important;
+}
+
+.hunterHelperTable.tabulator .tabulator-header .tabulator-col .tabulator-col-content .tabulator-col-sorter .tabulator-arrow {
+  border-left: 3px solid transparent;
+  border-right: 3px solid transparent;
+}
+
+.hunterHelperTable.tabulator .tabulator-header .tabulator-col.tabulator-sortable[aria-sort="asc"] .tabulator-col-content .tabulator-col-sorter .tabulator-arrow {
+  border-bottom: 6px solid rgb(249 86 13);
+}
+
+.hunterHelperTable.tabulator .tabulator-header .tabulator-col.tabulator-sortable[aria-sort="desc"] .tabulator-col-content .tabulator-col-sorter .tabulator-arrow {
+  border-top: 6px solid rgb(149 211 56);
+}
+
+.hunterHelperTable.tabulator .tabulator-header .tabulator-col.tabulator-sortable[aria-sort=none] .tabulator-col-content .tabulator-col-sorter .tabulator-arrow {
+  border-bottom: 6px solid #111111;
+}
+
+.hunterHelperTable.tabulator .tabulator-header .tabulator-col .tabulator-header-filter {
+  margin-top: 6px;
+  max-width: 150px;
+}
+
+.hunterHelperTable.tabulator .tabulator-header input[type="search"] {
+  background-color: #1c1c1c;
+  border: 1px solid #444;
+  border-radius: 0;
+  color: #e7be3d;
+}
+
+.hunterHelperTable.tabulator .tabulator-tableHolder .tabulator-placeholder span {
+  color: #f9560d;
+  font-weight: 100;
+}
+
+.hunterHelperTable.tabulator .tabulator-tableHolder .tabulator-table .tabulator-row.tabulator-calcs.tabulator-calcs-bottom {
+  background: #111 !important;
+  color: #555;
+}
+
+.hunterHelperTable.tabulator .tabulator-row.tabulator-group {
+  border-right: none;
+  border-bottom: 1px solid #373635;
+}
+
+.hunterHelperTable.tabulator .tabulator-row.tabulator-group.tabulator-group-level-0 {
+  background: #222;
+  font-weight: 100;
+}
+
+.hunterHelperTable.tabulator .tabulator-row.tabulator-group.tabulator-group-level-0:hover {
+  background-color: #111111 !important;
+  border-bottom: 5px solid #f9560d;
+}
+
+.hunterHelperTable.tabulator .tabulator-row.tabulator-group.tabulator-group-visible .tabulator-arrow {
+  border-top: 6px solid #111;
+}
+
+.helperAnimalTitle {
+  font-size: 12px;
+}
+
+.helperAntlerTitle {
+  font-size: 12px;
+}
+
+.helperAmmoImage {
+  max-height: 32px;
+  margin: 0 auto;
+}
+
+.helperAntlerImage {
+  padding: 0 10px;
+  margin: 0 auto;
+}
+
+.helperAnimalImage {
+  max-height: 32px;
+  max-width: 40px;
+  margin: 0 auto;
+  padding: 0 10px;
+}
+
+.helperCollectableImage {
+  max-height: 32px;
+}
+
+.helperWeaponImage {
+  max-height: 32px;
+  margin: 0 auto;
+}
+
+.helperCollectableImageBg {
+  height: 30px;
+  width: 30px;
+  display: block;
+  margin: 0 auto;
+}
+
+i.custom-check-select {
+  background: #f9560d;
+  display: inline-block;
+  height: 10px;
+  width: 10px;
+}
+
+i.custom-select {
+  background: #cccccc;
+  display: inline-block;
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+}
+
+.diagramData {
+  display: none;
+}
+
+.scoreLink {
+  display: block;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+
+.scoreLink:hover {
+  background: #f9560d;
+  color: #000;
+}

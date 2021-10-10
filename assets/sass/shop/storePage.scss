@@ -1,0 +1,56 @@
+.store-info-text {
+  background-color: #1d1d1d;
+  color: #BBB;
+  border-radius: 10px;
+  padding: 1px 7px;
+  position: absolute;
+  font-size: 14px;
+  top: 10px;
+  right: 0;
+  height: 50px;
+}
+
+#page-store .item-info .item-main-image {
+  height: 315px !important;
+}
+
+#page-store .item-info .buy-item {
+  display: flex !important;
+  align-items: baseline;
+  background: rgb(0 0 0 / 50%) !important;
+  justify-content: flex-start;
+  width: 50%;
+}
+
+#page-store .item-info .storeBuy {
+  width: 30%;
+}
+
+#page-store .item-info .buy-item .item-price {
+  display: flex !important;
+  align-items: baseline;
+  width: inherit;
+}
+
+#page-store .item-info .buy-item .discount-price {
+  margin-right: 50px;
+}
+
+#page-store .item-info .item-price .price {
+  font-size: 20px !important;
+  color: white;
+  margin-right: 50px;
+}
+
+#page-store .item-info .buy-item .old-price {
+  margin-right: 5px;
+}
+
+#page-store .item-info .owned-item {
+  font-size: 20px !important;
+  margin-left: auto;
+}
+
+#page-store .store-main .item-info .item-title {
+  color: #CCC;
+}

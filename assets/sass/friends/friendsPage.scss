@@ -1,0 +1,171 @@
+#fmodule {
+    position: absolute !important;
+    z-index: 999;
+    display: block;
+    background:#161616;
+    color:#bbb;
+    -webkit-box-shadow: -2px 4px 2px rgba(0,0,0,0.4);
+    -moz-box-shadow: -2px 4px 2px rgba(0,0,0,0.4);
+    box-shadow: -2px 4px 2px rgba(0,0,0,0.4);
+}
+#ftitle {
+    position: relative;
+    width: 220px;
+    padding: 15px 15px;
+    font-size: 24px;
+    color: #FFF;
+    background: #202020;
+    border-top: 1px solid #222;
+    -webkit-box-shadow: -2px 4px 2px rgba(0,0,0,0.4);
+    -moz-box-shadow: -2px 4px 2px rgba(0,0,0,0.4);
+    box-shadow: -2px 4px 2px rgba(0,0,0,0.4);
+    cursor:pointer;
+}
+#ftitle:hover {
+    background: #191919;
+    color: #666;
+}
+#fclose {
+    position: absolute;
+    top: 0;
+    left: 242px;
+    display: block;
+    height: 30px;
+    width: 30px;
+    color: #fff;
+    text-align: center;
+    padding-top: 20px;
+    font-size: 15px;
+    font-weight: bold;
+    background: #f9370d;
+    border-top: 1px solid #222;
+    -webkit-box-shadow: -2px 4px 2px rgba(0,0,0,0.4);
+    -moz-box-shadow: -2px 4px 2px rgba(0,0,0,0.4);
+    box-shadow: -2px 4px 2px rgba(0,0,0,0.4);
+    cursor: pointer;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+#fclose:hover {
+    background: #e72d06;
+    color: #fff;
+}
+#fcontent {
+    /*overflow: overlay;*/
+    padding-bottom: 20px;
+}
+.fgroup {
+    padding-top: 1px;
+    margin-left: 10px;
+    margin-right: 20px;
+    background: transparent;
+    padding-bottom: 0;
+    margin-top: 10px;
+    border-bottom: 5px solid #423e35;
+    border-right: 5px solid #423e35;
+}
+.fgroup .fblock {
+    margin-left: 0;
+    margin-right: 0;
+}
+.fblock {
+    display: block;
+    background: #222;
+    margin: 10px 20px 0 10px;
+    border-left: 5px solid #333;
+    cursor: pointer;
+}
+.fblock:hover {
+    color: #fff;
+    background: #191919;
+    border-left: 5px solid #e72d06;
+}
+.fname {
+    color: white;
+    cursor: pointer;
+    position: absolute;
+    transform: translate(0%, 50%);
+}
+.fimage {
+    padding-top: 4px;
+    margin-top: -10px;
+    margin-right: 10px;
+    border-radius: 3px;
+    width:32px;
+    float: left;
+}
+.fscore {
+    color: #999;
+    font-size: smaller;
+    cursor: pointer;
+    position: relative;
+    top: -10px;
+}
+.gsstatus {
+    background: #423e35;
+    margin-top: -1px;
+    display: block;
+    height: 20px;
+}
+.gstatus {
+    float: right;
+    margin-right: -5px;
+}
+.gname {
+    color: #999999;
+}
+.fstatus {
+    padding: 10px;
+}
+.show-pass {
+    color: #999;
+}
+.show-fstatus {
+    color: #95d338;
+}
+.show-sstatus {
+    float: right;
+}
+.fgroup .show-sstatus {
+    float: initial;
+}
+.finfo {
+    padding: 10px;
+    display:none;
+}
+.fgame {
+    background: #E7BE3D;
+    color: #222;
+    border-radius: 3px;
+    padding: 10px;
+    padding-top: 2px !important;
+    padding-bottom: 2px !important;
+}
+.fmap {
+    padding: 3px;
+    float: left;
+}
+.fplayers {
+    padding: 3px;
+    float: right;
+}
+.ffocus {
+    background: #222;
+    border-left: 5px solid #f9560d;
+    cursor: default;
+}
+.falert {
+    color:#aa0a3c;
+}
+::-webkit-scrollbar {
+    width: 10px;
+}
+::-webkit-scrollbar-track {
+    background: #111;
+}
+::-webkit-scrollbar-thumb {
+    background: #E7BE3D;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #f9370d;
+}

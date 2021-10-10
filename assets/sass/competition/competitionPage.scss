@@ -1,0 +1,56 @@
+.competition-info-text {
+  background-color: #000;
+  color: #BBB;
+  border-radius: 10px;
+  padding: 1px 7px;
+  position: absolute;
+  font-size: 14px;
+  top: 10px;
+  right: 0;
+}
+
+.competition-banner-text {
+  position: absolute;
+  display: flex;
+  bottom: 0;
+  margin: 10px 0;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  width: 100%;
+  font-weight: 100;
+  font-size: 38.5px;
+  color: #fff;
+  text-shadow: 0 1px 1px black;
+}
+
+.competition-style-animal {
+  max-width: 40px;
+  display: inline-block;
+  float: left;
+  padding: 3px;
+}
+
+#competitions-filter a {
+  background: #222;
+  display: inline-block;
+  margin: 2px;
+}
+
+#competitions-filter a:hover {
+  background: #191919;
+}
+
+#competitions-filter button {
+  background: #3c3c3c;
+  width: 252px;
+  line-height: 34px;
+}
+
+#competitions-filter a:hover button {
+  background: #191919;
+}
+
+#competitions-filter button.active {
+  background: #000;
+}

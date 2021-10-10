@@ -1,0 +1,178 @@
+.calculated-info {
+  color: #fff;
+  position: absolute;
+  right: 3px;
+  top: 24px;
+}
+
+#page-top {
+  cursor: pointer;
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  display: block;
+  background-color: #e7be3d;
+  height: 24px;
+  width: 24px;
+
+  &:hover {
+    background-color: #F9560D;
+  }
+
+  > .arrow-top {
+    position: absolute;
+    padding: 4px;
+    margin-top: 4px;
+    font-weight: bold;
+    font-size: 36px;
+    color: black;
+  }
+
+}
+
+#season-info {
+  display: block;
+  top: 40px;
+  position: absolute;
+  color: #222;
+  padding: 0px 2px;
+  line-height: 20px;
+  font-size: 11px;
+  background: #999;
+  height: 18px;
+  border-radius: 6px;
+  cursor: default;
+}
+
+#btnFriends,
+#btnMessage {
+  display: flex;
+  margin: 5px 10px;
+  color: white;
+  width: auto;
+  border: none !important;
+  text-align: center;
+
+  &:hover {
+    background: -webkit-linear-gradient(top, #333333, #222222) !important;
+  }
+}
+
+#btnFriends {
+  background: brown;
+}
+
+#btnMessage {
+  background: cadetblue;
+}
+
+/* Style fix */
+#profile #profile-header .profile-user {
+  bottom: 0;
+}
+
+#profile #profile-header .profile-user .user-name {
+  position: absolute;
+  margin-top: -50px;
+}
+
+#profile #profile-header .profile-user .friend-request {
+  margin-left: 0;
+  margin-top: 0;
+}
+
+#sidebar .promo-component .promo-action .btn {
+  float: none;
+}
+
+.onoffswitch-checkbox[type=checkbox] {
+  position: absolute;
+}
+
+.onoffswitch {
+  position: relative;
+  width: 76px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.onoffswitch-checkbox {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.onoffswitch-label {
+  display: block;
+  overflow: hidden;
+  cursor: pointer;
+  border: 0;
+  border-radius: 3px;
+}
+
+.onoffswitch-inner {
+  display: block;
+  width: 200%;
+  margin-left: -100%;
+  transition: margin 0.3s ease-in 0s;
+}
+
+.onoffswitch-inner:before, .onoffswitch-inner:after {
+  display: block;
+  float: left;
+  width: 50%;
+  height: 20px;
+  padding: 0;
+  line-height: 20px;
+  font-size: 14px;
+  color: white;
+  font-family: Trebuchet, Arial, sans-serif;
+  font-weight: bold;
+  box-sizing: border-box;
+}
+
+.onoffswitch-inner:before {
+  content: "ON";
+  padding-left: 10px;
+  background-color: #3b9e20;
+  color: #FFFFFF;
+}
+
+.onoffswitch-inner:after {
+  content: "OFF";
+  padding-right: 10px;
+  background-color: #E72D06;
+  color: #FFFFFF;
+  text-align: right;
+}
+
+.onoffswitch-switch {
+  display: block;
+  width: 20px;
+  margin: 0px;
+  background: #FFFFFF;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 52px;
+  border: 2px solid #999999;
+  border-radius: 3px;
+  transition: all 0.3s ease-in 0s;
+}
+
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
+  margin-left: 0;
+}
+
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
+  right: 0px;
+}
+
+.switchCounter {
+  color: #666;
+  display: block;
+  float: right;
+  top: -24px;
+  position: relative;
+}
