@@ -3,9 +3,15 @@ export function showMissingAmmo(e) {
 
     if ($menu_button.text().indexOf('Ammo') >= 0) {
         if ($menu_button.hasClass('active')) {
-            $('.cat10').append(
+
+            let ammoSidebar = $('#store-sidebar .cat10');
+            ammoSidebar.append(
                 `<span class="ammo-info-text info-position">Checking..</span>`
             );
+            // Show as "loading"
+            $menu_button.removeClass('sidebarBorder');
+            $menu_button.css('background', '#f9560d');
+
 
             let my_id = document.documentElement.innerHTML.match(
                 /user_id\s?:\s?\"(\d+)\"/
@@ -43,12 +49,21 @@ async function getBullets(data) {
 
 async function showAmmoCount(data, $menu_button) {
     if (data.length > 0) {
+
+        // By default set as purchase allowed
+        let button = $('.item button');
+        button.addClass('unknownBuyButton');
+
         for (let i = 0; i < data.length; i++) {
             let ammoId = $('.item').find(`[data-item-id='${data[i].item.id}']`);
             if (ammoId) {
-                $('.item button').addClass('disabledBuyButton');
-
                 let $ammoTarget = ammoId.parent();
+
+                // Mark ammo which have quantity
+                if($ammoTarget.find('button').hasClass('disabledBuyButton')) {
+                    $ammoTarget.find('button').text('---');
+                }
+
                 let currentAmmo = ammoId
                     .parent()
                     .find('.you-own')
@@ -64,19 +79,22 @@ async function showAmmoCount(data, $menu_button) {
 
                     // Show missing ammo count
                     $ammoTarget
-                        .find('.item-price')
                         .append(
-                            `<span class="calculated-info">x${Math.floor(
+                            `<span class="calculated-info" title="Recommended number of 'Buy' button clicks">x${Math.floor(
                                 missingAmmo / data[i].item.units.count
                             )}</span>`
                         );
 
-                    // Additional marking
+                    // Overwrite previous markings and show Buyable ammo
                     $ammoTarget.find('button').addClass('newBuyButton');
+                    $ammoTarget.find('button').text('BUY');
                 }
             }
         }
     }
-    $menu_button.css('background', '#f9560d');
+    $menu_button.css('background', '');
+    $menu_button.removeClass('sidebarBorder');
+    $menu_button.addClass('sidebarBorderOn');
+    // Hide small sidebar indicator 'Checking..'
     hideInfoText('.ammo-info-text');
 }

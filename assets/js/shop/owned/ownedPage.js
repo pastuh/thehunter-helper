@@ -4,7 +4,10 @@ import { showMissingAmmo } from '../ammo/ammoPage';
 export function addOwnedInteractionCheckbox() {
     if (!$('.store-info-text').length) {
         $('.page-title').after(
-            `<div class="store-info-text">"Hide owned items"
+            `<div class="store-info-text">
+                <div>"Hide owned items" 
+                    <div class="help-tip"><p>Already purchased items will be hidden.<br> (If at least 1 quantity exist)</p></div>
+                </div>
                 <div class="onoffswitch">
                     <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="ownedItemsHidden" tabindex="0">
                     <label class="onoffswitch-label" for="ownedItemsHidden">
@@ -87,10 +90,16 @@ function getOwnedItemsIsHidden() {
     });
 }
 
-function setOwnedItemsVisibility(visible) {
-    let ammoSelected = $('#store-sidebar .cat10').hasClass('selected');
+function setOwnedItemsVisibility(needHideItem) {
+    let ammoSidebar = $('#store-sidebar .cat10');
+    let ammoSelected = ammoSidebar.hasClass('selected');
 
-    if (visible && !ammoSelected) {
+    // Mark AMMO sidebar as interactive
+    if(ammoSelected) {
+        ammoSidebar.parent().find('li a.active').addClass('sidebarBorder');
+    }
+
+    if (needHideItem && !ammoSelected) {
         console.log(`checking for hidden items`);
         $('.store-pagination a').on('click', function () {
             console.log(`owned checker activated.`);

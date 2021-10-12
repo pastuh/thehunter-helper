@@ -11,7 +11,7 @@ export function calculateBundle() {
         if ($('#store-sidebar .cat50.selected').length === 1) {
             console.log(`bundle tab is active`);
             // If not exist any old info.. add
-            if (!$('.calculated-info').length && $('.view-details').length) {
+            if (!$('.banner-info').length && $('.view-details').length) {
                 console.log(`calculations not exist`);
                 if (typeof globalLocInfo !== 'object') {
                     globalLocInfo = JSON.parse(
@@ -56,12 +56,8 @@ function setBundleInfo(elementData) {
             .find('.item-price .price')
             .before(`<span class="old-price">${info.oldPrice} > </span>`);
 
-        $(this)
-            .find('.item-price')
-            .append(
-                `<span class="calculated-info">-${info.discount.toFixed(
-                    0
-                )}%</span>`
-            );
+        let banner = $(this).find('.banner-inner');
+        banner.text(`-${info.discount.toFixed(0)}%`);
+        banner.addClass('banner-info')
     });
 }

@@ -11,6 +11,10 @@
   float: right;
 }
 
+.btn-primary.unknownBuyButton {
+  background-color: #f9370d;
+}
+
 .btn-primary.disabledBuyButton {
   background: #161616;
 }
@@ -26,3 +30,11 @@
 .btn-primary.newBuyButton:hover {
   background: #40861b;
 }
+
+.sidebarBorder {
+  border-left: 5px solid cadetblue !important;
+}
+.sidebarBorderOn {
+  border-left: 5px solid #F9560D !important;
+}
+

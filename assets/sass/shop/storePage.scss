@@ -10,6 +10,67 @@
   height: 50px;
 }
 
+.ownfull {
+  background-color: rgb(217, 237, 247);
+  color: rgb(58, 135, 173) !important;
+  text-shadow: rgba(255, 255, 255, 0.5) 0px 1px 0px !important;
+  background-clip: padding-box;
+  border-color: rgb(188, 232, 241);
+  padding: 10px;
+  border-radius: 3px;
+  width: 100%;
+  margin: 0;
+  text-align: left;
+}
+
+#page-store .store-main .item-banner-label .banner-inner {
+  width: 100px !important;
+  height: 16px !important;
+  line-height: 18px !important;
+  top: 25px !important;
+  left: -18px !important;
+}
+
+#page-store .store-main .item-inner {
+  margin-bottom: 10px;
+}
+
+#page-store .store-main .item-inner .item-price-container {
+  position: absolute !important;
+  height: 38px !important;
+  background: #000;
+  text-align: right !important;
+  margin-left: -10px;
+}
+
+#page-store .store-main .item-inner .inlineStoreBuy {
+  width: 20% !important;
+}
+
+#page-store .store-main .item-inner .item-price {
+  height: 38px !important;
+  margin-top: 0 !important;
+  padding-right: 10px;
+}
+
+#page-store .store-main .item-inner .item-price .silver-price {
+  font-size: 14px !important;
+}
+
+#page-store .store-main .item-inner .item-price .discount-price {
+  font-size: 20px !important;
+}
+
+#page-store .store-main .item-inner .you-own {
+  position: relative !important;
+  top: -70px !important;
+  left: 2px !important;
+}
+
+.hide-price {
+  visibility: hidden;
+}
+
 #page-store .item-info .item-main-image {
   height: 315px !important;
 }

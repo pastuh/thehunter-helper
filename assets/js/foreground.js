@@ -64,6 +64,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             addOwnedInteractionCheckbox();
             checkHideOwnedItems();
             showSalePrice();
+            triggerShopSearch();
         });
     }
 });
@@ -76,6 +77,15 @@ function showInfoButtons() {
         addInteractionBtn('btnFriends', 'Show In-game friends');
         addInteractionBtn('btnMessage', 'Read new messages');
         setMessageStatus();
+    });
+}
+
+function triggerShopSearch() {
+    $('#store-category-search').on('keyup', function () {
+        addOwnedInteractionCheckbox();
+        checkHideOwnedItems();
+        showSalePrice();
+        calculateBundle();
     });
 }
 
