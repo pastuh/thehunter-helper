@@ -30,6 +30,8 @@ mix.setPublicPath('./')
         'dist/css/competition'
     )
     .js('assets/js/competition/competitionPage.js', 'dist/js/competition')
+    .js('assets/js/competition/competitionPause.js', 'dist/js/competition')
+    .js('assets/js/competition/competitionSave.js', 'dist/js/competition')
 
     .sass('assets/sass/statistics/statisticsPage.scss', 'dist/css/statistics')
 
@@ -75,6 +77,13 @@ mix.setPublicPath('./')
 
     .options({
         processCssUrls: false,
+        terser: {
+            terserOptions: {
+                compress: {
+                    drop_console: true
+                }
+            }
+        },
     });
 
 mix.autoload({

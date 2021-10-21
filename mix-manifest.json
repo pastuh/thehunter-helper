@@ -7,6 +7,8 @@
     "/dist/js/lodge/lodgePage.js": "/dist/js/lodge/lodgePage.js",
     "/dist/js/mission/missionPage.js": "/dist/js/mission/missionPage.js",
     "/dist/js/competition/competitionPage.js": "/dist/js/competition/competitionPage.js",
+    "/dist/js/competition/competitionPause.js": "/dist/js/competition/competitionPause.js",
+    "/dist/js/competition/competitionSave.js": "/dist/js/competition/competitionSave.js",
     "/dist/js/statistics/last/sorterContentPage.js": "/dist/js/statistics/last/sorterContentPage.js",
     "/dist/js/statistics/last/weaponsTable.js": "/dist/js/statistics/last/weaponsTable.js",
     "/dist/js/statistics/last/collectablesTable.js": "/dist/js/statistics/last/collectablesTable.js",

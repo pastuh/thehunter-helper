@@ -54,6 +54,18 @@ export function checkElementLoaded(element, callback) {
     }, 100);
 }
 
+
+export function checkLocalStorage() {
+    chrome.storage.local.get(function (result) {
+        console.log(`LOCAL:`, result);
+    });
+}
+
+export function clearLocalStorage() {
+    console.log(`~LOCAL CLEARED~`);
+    chrome.storage.local.clear();
+}
+
 // Allow to scroll back to top
 export function addUpArrow() {
     if (!$('#page-top').length) {
@@ -95,11 +107,9 @@ export function addInteractionBtn(btnId, btnName) {
     }
 }
 
-// Nenaudojama?
-/*export function sendContentMsgToPopup(from, todo, data = '-') {
-    chrome.runtime.sendMessage({
-        from: from,
-        todo: todo,
-        data: data,
-    });
-}*/
+export function initAuth() {
+    let auth_id = document.documentElement.innerHTML.match(
+        /\"access_token\":\"(\w+)\"/
+    );
+    return auth_id[1];
+}

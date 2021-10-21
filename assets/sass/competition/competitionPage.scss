@@ -54,3 +54,99 @@
 #competitions-filter button.active {
   background: #000;
 }
+
+// HISTORY
+#enrolled-competitions-region .paused_competition,
+#competitions-list-region .paused_competition {
+  color: #e7be3d !important;
+}
+#enrolled-competitions-region .paused_competition a,
+#competitions-list-region .paused_competition {
+  color: #e7be3d !important;
+}
+#enrolled-competitions-region .mCSB_dragger_bar {
+  width: 15px;
+}
+#enrolled-competitions-region .mCSB_scrollTools .mCSB_dragger {
+  cursor: grab;
+}
+#enrolled-competitions-region th,
+#enrolled-competitions-region td {
+  padding: 5px;
+}
+#enrolled-competitions-region tr {
+  transition-duration: 2s;
+  transition-property: background-color;
+}
+#enrolled-competitions-region tr:nth-child(odd) {
+  background: #161616;
+}
+#enrolled-competitions-region .btn-join.btn-paused {
+  background: #e7be3d;
+  color: #333;
+}
+#enrolled-competitions-region .btn-join.btn-paused:hover {
+  background: rgb(249, 86, 13);
+  color: #333;
+}
+#enrolled-competitions-region .btn-leave.btn-paused:hover {
+  background: #d5d5d5;
+  color: #333;
+}
+#enrolled-competitions-region .btn-paused {
+  background: #EEE;
+  color: #333;
+}
+#enrolled-competitions-region .btn-pause {
+  background: #e7be3d;
+  padding: 4px;
+}
+#enrolled-competitions-region .btn-pause.active {
+  background: #4c9e20;
+}
+#enrolled-competitions-region .btn-pause:hover {
+  background: rgb(249, 86, 13);
+}
+#localCompetitions_counter {
+  color: #e7be3d;
+}
+
+#competitions-list-region .competitions-table-rows tr:nth-child(odd) {
+  background: #1c1c1c;
+}
+
+#competitions-list-region .competitions-table-rows .btn-ui[disabled] {
+  background: #000;
+  color: #999;
+}
+
+#competitions-list-region .btn-enrolled {
+  background: #3c3c3c;
+  color: #fff;
+  cursor: default;
+
+  &:active {
+    box-shadow: none;
+  }
+  &:focus {
+    outline: none;
+  }
+}
+#competitions-list-region .btn-saved {
+  background: #3c3c3c;
+  color: #fff;
+  cursor: default;
+
+  &:active {
+    box-shadow: none;
+  }
+  &:focus {
+    outline: none;
+  }
+}
+
+// ZYMETI LISTE KURIE PAUSED AR ENROLLED KAI SWITCHINA GYVUNA
+
+//#competitions-filter-region {
+//  display: none;
+//}

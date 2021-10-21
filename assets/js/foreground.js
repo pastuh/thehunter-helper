@@ -12,6 +12,7 @@ import {
 
 import { activateStatsLastTables } from './statistics/last/sorterContentPage';
 import { activateCompetitionStyle } from './competition/competitionPage';
+import {activateCompetitionHistory} from "./competition/competitionHistory";
 import { addFriendsModule } from './friends/friendsPage';
 import { addProfileLodges } from './lodge/lodgePage';
 import { activateMissions } from './mission/missionPage';
@@ -43,6 +44,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
     if (request.todo === 'styleCompetition') {
         activateCompetitionStyle();
+        activateCompetitionHistory();
     }
     if (request.todo === 'checkTabButtons') {
         showInfoButtons();
