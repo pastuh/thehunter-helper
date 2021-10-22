@@ -110,6 +110,13 @@
 #localCompetitions_counter {
   color: #e7be3d;
 }
+.animalEnrolled_counter {
+  background: #e7be3d !important;
+}
+#competitions-filter-region button.active.animalEnrolled {
+  background: #4c9e20 !important;
+}
+
 
 #competitions-list-region .competitions-table-rows tr:nth-child(odd) {
   background: #1c1c1c;
@@ -121,8 +128,8 @@
 }
 
 #competitions-list-region .btn-enrolled {
-  background: #3c3c3c;
-  color: #fff;
+  background: #eee;
+  color: #333;
   cursor: default;
 
   &:active {
@@ -144,6 +151,39 @@
     outline: none;
   }
 }
+
+// HISTORY
+#competitions-tab-region .nav-tabs li {
+  border-right: none;
+  border-bottom: 3px solid #4c9e20;
+  padding: 5px;
+  padding-bottom: 0;
+  text-decoration: none;
+  color: #666;
+  border-bottom: 1px solid #111;
+  font-weight: bold;
+  border-top: none;
+}
+#competitions-tab-region .nav-tabs li.active a {
+  border-bottom: 3px solid #4c9e20;
+}
+#competitions-tab-region .active a,
+#competitions-tab-region .active a:hover,
+#competitions-tab-region .active a:focus {
+  border: 1px solid transparent;
+  outline: none;
+  outline-offset: initial;
+}
+
+#competitions-tab-region .nav-tabs li:hover {
+  color: #FFF;
+  background: #191919;
+  -webkit-transition: color .2s linear, background .2s linear;
+  -moz-transition: color .2s linear, background .2s linear;
+  -o-transition: color .2s linear, background .2s linear;
+  transition: color .2s linear, background .2s linear;
+}
+
 
 // ZYMETI LISTE KURIE PAUSED AR ENROLLED KAI SWITCHINA GYVUNA
 

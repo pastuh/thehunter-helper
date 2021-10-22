@@ -1,4 +1,4 @@
-import { checkElementLoaded } from '../utilities/extension/helpers';
+import {checkElementLoaded, checkPageLoaded} from '../utilities/extension/helpers';
 
 export function activateCompetitionStyle() {
     checkElementLoaded('#competitions-filter', function () {
@@ -31,13 +31,13 @@ export function activateCompetitionStyle() {
                     });
 
                     if (target.hasClass('active')) {
-                        $(this).css({ background: '#000' });
-                        targetCount.css({ background: '#E7BE3D' });
+                        target.addClass('animalEnrolled');
+                        //targetCount.css({ background: '#4c9e20' });
 
                         let targetName = target.attr('data-name');
                         let targetId = target.attr('data-id');
                         $('#competitions-list-region').prepend(
-                            `<div style="position:relative;"><img src="https://static.thehunter.com/static/img/competitions/species-${targetId}.jpg" onerror="javascript:this.src='https://static.thehunter.com/static/img/competitions/species-multispecies.jpg'"><div class="competition-banner-text">${targetName} competitions</div></div>`
+                            `<div class="competition-list-banner" style="position:relative;"><img src="https://static.thehunter.com/static/img/competitions/species-${targetId}.jpg" onerror="javascript:this.src='https://static.thehunter.com/static/img/competitions/species-multispecies.jpg'"><div class="competition-banner-text">${targetName} competitions</div></div>`
                         );
                     }
 
@@ -111,4 +111,36 @@ export function setCompetitionAnimalImage(title) {
         return animalTitle;
     }
     return animalTitle;
+}
+
+export function showActiveCompetitionIndicator() {
+
+    checkPageLoaded(function () {
+        let enrolledList = $('#enrolled-competitions-region .competitions-table-rows tr td');
+        let enrolledTags = enrolledList.find('.species-tag');
+
+        let allCompetitions = $('#competitions-filter button');
+
+        if (enrolledTags.length > 0) {
+            allCompetitions.each(function () {
+                let target = $(this);
+                let title = $(this)[0].childNodes[0].nodeValue.trim();
+
+                let currentCount = target.find('.filter-amount');
+                currentCount.removeClass('animalEnrolled_counter');
+                console.log(`color gray`);
+
+                enrolledTags.each(function () {
+                    if ($(this).text() === title) {
+                        console.log(`found animal`, title);
+                        currentCount.addClass('animalEnrolled_counter');
+                        return false;
+                    }
+                });
+            });
+        } else {
+            allCompetitions.find('.filter-amount').removeClass('animalEnrolled_counter');
+        }
+    });
+
 }

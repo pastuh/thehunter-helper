@@ -9,23 +9,18 @@ export function activateCompetitionSave() {
 
 
 export function deleteSavedCompetition(competitionId, existingRowsCount) {
-	let requiredElement = $('#enrolled-competitions-region .competitions-table-rows tr td.comp-image-container');
-
 	chrome.storage.local.get('savedCompetitions', data => {
 		data.savedCompetitions = $.grep(data.savedCompetitions || [], function(value) {
 			return value !== competitionId;
 		});
 
 		chrome.storage.local.set(data, () => {
-			// Competition data is now stored
 			console.log(`Deleted Saved Competition: ${competitionId}`);
 			checkLocalStorage();
 
 			checkElementLoaded('#competitions-list-region .competitions-table-rows', function () {
 				updateEnrolledCompetitions();
 			});
-
-			// waitForElementUpdate(existingRowsCount, requiredElement, updateEnrolledCompetitions, false);
 		})
 	});
 }

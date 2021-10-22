@@ -1,22 +1,21 @@
 import {checkElementLoaded, checkPageLoaded, clearLocalStorage} from "../utilities/extension/helpers";
 import {activateCompetitionSave, deleteSavedCompetition, saveSelectedCompetition} from "./competitionSave";
 import {activateCompetitionPause } from "./competitionPause";
+import {showActiveCompetitionIndicator} from "./competitionPage";
 
 export function activateCompetitionHistory() {
 	checkElementLoaded('#competitions-list-region .competitions-table-rows', function () {
 		if (!$('#competitions-tab-region ul .helper_cmpHistory').length) {
 			activateCompetitionPause();
 			activateCompetitionSave();
-
-
-
+			showActiveCompetitionIndicator();
 			activateCompetitionButtons();
 		}
 	});
 }
 
 function activateCompetitionButtons() {
-	console.log(`Activating join leave buttons..`);
+
 	$('#page-competitions').on('click', '.btn-join', function(element) {
 		console.log(`joined competition..`);
 
@@ -33,6 +32,7 @@ function activateCompetitionButtons() {
 		let button = $(element.target);
 		let competitionId = button.data('cmpid');
 		console.log(`Clicked competition: `, competitionId);
+		button.text('Loading');
 
 		// For TEST
 		//clearLocalStorage();
@@ -42,6 +42,7 @@ function activateCompetitionButtons() {
 			if (button.text() === 'Deactivate') {
 				clearInterval(intervalChecker);
 				saveSelectedCompetition(competitionId, existingRowsCount);
+				fixActiveAnimalIndicator();
 			}
 		}, 100);
 
@@ -67,14 +68,76 @@ function activateCompetitionButtons() {
 			if (button.hasClass('btn-join')) {
 				clearInterval(intervalChecker);
 				deleteSavedCompetition(competitionId, existingRowsCount);
+				fixActiveAnimalIndicator();
 			}
 		}, 100);
 
 	});
 
+	$('#page-competitions').on('click', '.compSelectSpecies', function(element) {
+		hideIfExistCompetitionActiveButtons();
+		showActiveCompetitionIndicator();
+	});
+
 	$('#page-competitions').on('click', '.helper_cmpHistory', function(element) {
 		element.preventDefault();
 		console.log(`History tab selected`);
+		// SHOW CLEAR PAGE
+		$('#competitions-filter-region').css({'display': 'none'});
+		$('#competitions-campaign-description').css({'display': 'none'});
+		$('#competitions-pagination-region').css({'display': 'none'});
+		$('#competitions-list-region .competitions-table-rows tr').css({'display': 'none'});
+
+		// LOAD SAVED DATA
+		// LOAD SERVER DATA
+		// CHECK IF FINISHED. BASED ON THAT SET SAVE POSITION
+		// IF NOT EXIST IN SERVER. MARK DIFFERENT COLOR
+		// LIST BY ID
+	});
+
+	$('#page-competitions').on('click', '.tab', function(element) {
+		if (!$(element.target).hasClass('helper_cmpHistory')) {
+			console.log(`ne history tabas`);
+			showActiveCompetitionIndicator();
+			$('#competitions-filter-region').css({'display': 'block'});
+			$('#competitions-campaign-description').css({'display': 'block'});
+			$('#competitions-pagination-region').css({'display': 'block'});
+			$('#competitions-list-region .competitions-table-rows tr').css({'display': 'table-row'});
+		}
+	});
+
+	$('#page-competitions').on('click', '.btn-enrolled', function(element) {
+		let competitionId = $(element.target).data('cmpid');
+
+		$('html, body').animate({
+			scrollTop: $('#page-competitions').offset().top - 100
+		}, 150);
+
+		let targetLine = $(`#enrolled-competitions-region tr [data-cmpid="${competitionId}"]`).first().closest('tr');
+		let notifyChanges = targetLine
+			.css({backgroundColor: '#f9370d'})
+			.show()
+		setTimeout(function(){
+			notifyChanges.css({backgroundColor: ''});
+		},750);
+
+	});
+}
+
+export function fixActiveAnimalIndicator() {
+	checkPageLoaded(function () {
+		let selectedAnimal = $('#competitions-filter-region button.compSelectSpecies.active');
+		if (selectedAnimal) {
+			selectedAnimal.removeClass('active');
+			let counterColor = selectedAnimal.find('span');
+			counterColor.each(item => {
+				if (!$(item).hasClass('animalEnrolled_counter')) {
+					$(item).css({'background': '#ccc'});
+				}
+			})
+
+			$('.competition-list-banner').remove();
+		}
 	});
 }
 
@@ -127,6 +190,8 @@ export function hideCompetitionAlreadyActiveButtons() {
 			}
 		});
 	});
+
+	showActiveCompetitionIndicator();
 }
 
 function movePausedButFinishedToSave(id) {

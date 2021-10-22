@@ -1,6 +1,6 @@
 import {checkLocalStorage, clearLocalStorage, initAuth} from "../utilities/extension/helpers";
-import {updateEnrolledCompetitions, waitForElementUpdate} from "./competitionSave";
 import {hideIfExistCompetitionActiveButtons} from "./competitionHistory";
+import {showActiveCompetitionIndicator} from "./competitionPage";
 
 export function activateCompetitionPause() {
 	getLocalPausedCompetitions()
@@ -16,19 +16,24 @@ export async function repeatGetLocalPausedCompetitions() {
 	getLocalPausedCompetitions()
 		.then((data) => adjustEnrolledCompetitionTitle(data))
 		.then((data) => addLoadedPausedCompetitionRows(data))
+		.then(() => showActiveCompetitionIndicator());
 }
 
 function adjustEnrolledCompetitionTitle(data) {
 	console.log(`Calculating new Title`);
 
+	let enrolledList = $('#enrolled-competitions-region .competitions-table-rows tr td');
+	let realEnrolled = enrolledList.find('.comp-image-container');
+
 	let totalComps = 0;
-	let allCompetitions = $('#competitions-filter .filter-amount');
-	allCompetitions.each(function() {
+	let allCompetitions = $('#competitions-filter button');
+	let allAnimalsCounters = allCompetitions.find('.filter-amount');
+
+	allAnimalsCounters.each(function() {
 		totalComps += parseInt($(this).text());
 	});
 
-	let enrolledList = $('#enrolled-competitions-region .competitions-table-rows tr td.comp-image-container');
-	let totalRows = enrolledList.length;
+	let totalRows = realEnrolled.length;
 	let counter;
 	if (typeof data === "undefined") {
 		counter = `${totalRows}`;
@@ -37,12 +42,10 @@ function adjustEnrolledCompetitionTitle(data) {
 
 		// Adjust information line if exist only PAUSED competitions
 		let infoLine = 	$('#enrolled-competitions-region .alert-info');
-		console.log(`check paused data`, data);
 		if(infoLine.length > 0 && data.length > 0) {
 			infoLine.text(`All enrolled competitions is paused`);
 		}
 	}
-
 	$('#enrolled-competitions-region h4').html(`Enrolled competitions (${counter} / ${totalComps})`);
 
 	// Pass data to another function
@@ -86,6 +89,7 @@ function activatePauseCompetitionButtons() {
 		competitionRow.find('.first a').addClass('paused_competition');
 		let actionEl = competitionRow.find('.action');
 		actionEl.find('button').text('X');
+		actionEl.find('button').addClass('btn-paused');
 		actionEl.prev('td').addClass('paused_competition').text('Paused');
 		actionEl.prepend(btnTemplate);
 		// Remove pause button
@@ -118,7 +122,7 @@ function activatePauseCompetitionButtons() {
 
 export function deleteLocalPausedCompetition(competitionId) {
 	chrome.storage.local.get('pausedCompetitions', data => {
-		// console.log(`Paused before check:`, data.pausedCompetitions);
+		console.log(`Paused before check:`, data.pausedCompetitions);
 
 		// If competitionID not equals stored IDs leave them in Array.
 		data.pausedCompetitions = $.grep(data.pausedCompetitions || [], function(value) {
@@ -130,13 +134,12 @@ export function deleteLocalPausedCompetition(competitionId) {
 			}
 		});
 
-		// console.log(`Paused after check:`, data.pausedCompetitions);
+		console.log(`Paused after check:`, data.pausedCompetitions);
 
 		chrome.storage.local.set(data, () => {
 			// Competition data is now stored
 			console.log(`Deleted Local Paused Competition: ${competitionId}`);
 			checkLocalStorage();
-
 			// Find saved competition and style
 			// let requiredElement = '#enrolled-competitions-region .competitions-table-rows tr td.comp-image-container';
 			// let existingRows = $(requiredElement).length;
