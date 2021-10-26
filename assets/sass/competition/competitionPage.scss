@@ -56,6 +56,16 @@
 }
 
 // HISTORY
+#enrolled-competitions-region .competitions-table-rows .action {
+  min-width: 115px;
+}
+#enrolled-competitions-region .species-tag {
+  cursor:pointer;
+}
+#enrolled-competitions-region .species-tag:hover {
+  background: #4c9e20;
+  color: #fff;
+}
 #enrolled-competitions-region .paused_competition,
 #competitions-list-region .paused_competition {
   color: #e7be3d !important;
@@ -89,7 +99,7 @@
   background: rgb(249, 86, 13);
   color: #333;
 }
-#enrolled-competitions-region .btn-leave.btn-paused:hover {
+#enrolled-competitions-region .btn-leave.btn-paused:hover:not(.btn-stop) {
   background: #d5d5d5;
   color: #333;
 }
@@ -100,6 +110,11 @@
 #enrolled-competitions-region .btn-pause {
   background: #e7be3d;
   padding: 4px;
+}
+#enrolled-competitions-region .btn-stop {
+  background: #161616;
+  color: #161616;
+  cursor: default;
 }
 #enrolled-competitions-region .btn-pause.active {
   background: #4c9e20;
@@ -155,14 +170,28 @@
 // HISTORY
 #competitions-tab-region .nav-tabs li {
   border-right: none;
-  border-bottom: 3px solid #4c9e20;
-  padding: 5px;
   padding-bottom: 0;
   text-decoration: none;
   color: #666;
-  border-bottom: 1px solid #111;
   font-weight: bold;
   border-top: none;
+  background: #3c3c3c;
+  border: 2px solid black;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+  padding: 0;
+}
+#competitions-tab-region .nav-tabs li.active {
+  background: transparent;
+}
+#competitions-tab-region .nav-tabs li a {
+  margin-right: 0;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+}
+#competitions-tab-region .nav-tabs li:hover>a {
+  background: #4c9e20;
+  color: #fff;
 }
 #competitions-tab-region .nav-tabs li.active a {
   border-bottom: 3px solid #4c9e20;

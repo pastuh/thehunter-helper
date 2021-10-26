@@ -1,70 +1,88 @@
-import {checkLocalStorage, clearLocalStorage, initAuth} from "../utilities/extension/helpers";
-import {hideIfExistCompetitionActiveButtons} from "./competitionHistory";
-import {showActiveCompetitionIndicator} from "./competitionPage";
+import {
+	checkElementLoaded,
+	checkLocalStorage,
+	checkPageLoaded,
+	clearLocalStorage,
+	initAuth
+} from "../utilities/extension/helpers";
+import {
+	fixPausedCompetitionLeaveBtn,
+	hideIfExistCompetitionActiveButtons,
+	updateTitleAllListedCompetitions
+} from "./competitionPage";
+import {markActivatedAnimals} from "./competitionPage";
+import {getLocalSavedCompetitions} from "./competitionSave";
+import {addTimerForCompetitions} from "./competitionHistory";
 
 export function activateCompetitionPause() {
-	getLocalPausedCompetitions()
+	console.log(`Activating competitions pause..`);
+	getLocalSavedCompetitions()
 		.then((data) => adjustEnrolledCompetitionTitle(data))
+		.then((data) => addTimerForCompetitions(data))
 		.then((data) => addLoadedPausedCompetitionRows(data))
 		.then(() => addPauseToCompetitionRow())
 		.then(() => hideIfExistCompetitionActiveButtons())
-		.then(() => activatePauseCompetitionButtons());
+		.then(() => activatePauseCompetitionButtons())
+		.then(() => fixPausedCompetitionLeaveBtn());
 }
 
 export async function repeatGetLocalPausedCompetitions() {
 	console.log(`Repeating get local paused comps..`);
-	getLocalPausedCompetitions()
+	getLocalSavedCompetitions()
 		.then((data) => adjustEnrolledCompetitionTitle(data))
+		.then((data) => addTimerForCompetitions(data))
 		.then((data) => addLoadedPausedCompetitionRows(data))
-		.then(() => showActiveCompetitionIndicator());
+		.then(() => markActivatedAnimals());
 }
 
-function adjustEnrolledCompetitionTitle(data) {
-	console.log(`Calculating new Title`);
+function adjustEnrolledCompetitionTitle(savedCompetitions) {
 
-	let enrolledList = $('#enrolled-competitions-region .competitions-table-rows tr td');
-	let realEnrolled = enrolledList.find('.comp-image-container');
+		//clearLocalStorage();
 
-	let totalComps = 0;
-	let allCompetitions = $('#competitions-filter button');
-	let allAnimalsCounters = allCompetitions.find('.filter-amount');
+		console.log(`Calculating new Title`, savedCompetitions);
 
-	allAnimalsCounters.each(function() {
-		totalComps += parseInt($(this).text());
-	});
+		let enrolledList = $('#enrolled-competitions-region .competitions-table-rows tr');
+		let realEnrolled = enrolledList.find('button.btn-secondary.btn-leave');
 
-	let totalRows = realEnrolled.length;
-	let counter;
-	if (typeof data === "undefined") {
-		counter = `${totalRows}`;
-	} else {
-		counter = `<span id="localCompetitions_counter">${data.length + totalRows}</span>`;
+		let totalRows = realEnrolled.length;
+		let counter;
+		let existPaused = false;
 
-		// Adjust information line if exist only PAUSED competitions
-		let infoLine = 	$('#enrolled-competitions-region .alert-info');
-		if(infoLine.length > 0 && data.length > 0) {
-			infoLine.text(`All enrolled competitions is paused`);
+		if (typeof savedCompetitions === "undefined") {
+			console.log(`-no SAVED competitions`);
+			counter = `${totalRows}`;
+		} else {
+
+			counter = totalRows;
+			savedCompetitions.forEach( (item, index) => {
+				if(item.paused) {
+					counter += 1;
+					existPaused = true;
+				}
+			});
+
+			counter = `<span id="localCompetitions_counter">${counter}</span>`;
+
+			// Adjust information line if exist only PAUSED competitions
+			let infoLine = 	$('#enrolled-competitions-region .alert-info');
+			if(infoLine.length > 0 && existPaused) {
+				infoLine.text(`All enrolled competitions is paused`);
+			}
 		}
-	}
-	$('#enrolled-competitions-region h4').html(`Enrolled competitions (${counter} / ${totalComps})`);
 
-	// Pass data to another function
-	return data;
-}
+		$('#enrolled-competitions-region h4').html(`Enrolled competitions (${counter}<span id="globalCompetitions_counter"></span>)`);
 
-export function getLocalPausedCompetitions() {
-	return new Promise((resolve) => {
-		chrome.storage.local.get('pausedCompetitions', function (data) {
-			console.log(`Loaded all Paused Competitions if exist`, data);
-			resolve(data.pausedCompetitions);
-		});
-	});
+		updateTitleAllListedCompetitions();
+
+	// Pass savedCompetitions to another function
+		return {
+			savedCompetitions,
+			enrolledList
+		};
 }
 
 // Add for each Enrolled competition PAUSE button
 export function addPauseToCompetitionRow() {
-	console.log(`Adding PAUSE button if not Paused`);
-
 	let elementTarget = $('#enrolled-competitions-region .competitions-table-rows tr');
 	elementTarget.each(function () {
 		let target = $(this).find('button');
@@ -77,8 +95,8 @@ export function addPauseToCompetitionRow() {
 }
 
 function activatePauseCompetitionButtons() {
-
-	$('#page-competitions').on('click', '.btn-pause', function(element) {
+	let competitionsPage = $('#page-competitions');
+	competitionsPage.on('click', '.btn-pause', function(element) {
 		let competitionId = $(element.target).data('cmpid');
 		let competitionRow = $(element.target).closest('tr');
 
@@ -89,19 +107,18 @@ function activatePauseCompetitionButtons() {
 		competitionRow.find('.first a').addClass('paused_competition');
 		let actionEl = competitionRow.find('.action');
 		actionEl.find('button').text('X');
-		actionEl.find('button').addClass('btn-paused');
+		actionEl.find('button').addClass('btn-secondary btn-paused');
 		actionEl.prev('td').addClass('paused_competition').text('Paused');
 		actionEl.prepend(btnTemplate);
 		// Remove pause button
 		$(element.target).remove();
 
-		console.log(`...cloning and prepending..`);
 		let cloned = competitionRow.clone(true)
 		$('#enrolled-competitions-region .competitions-table-rows').prepend(cloned);
 		competitionRow.remove();
 
 		// Move paused row to top
-		savePausedCompetition(competitionId, competitionRow);
+		savePausedCompetition(competitionId, cloned);
 
 		let notifyChanges = cloned
 			.css({backgroundColor: 'rgb(231 190 61 / 25%)'})
@@ -110,138 +127,91 @@ function activatePauseCompetitionButtons() {
 			notifyChanges.css({backgroundColor: ''});
 		},100);
 
-		// CIA PRIDETI FUNKCIJAS: TITLE update, GAUTI ALL PAUSED, FILL TABLE
 	});
 
-	$('#page-competitions').on('click', '.btn-paused', function(element) {
-		let competitionId = $(element.target).data('cmpid');
-		deleteLocalPausedCompetition(competitionId);
+	// For visual loading indicator
+	competitionsPage.on('click', '.btn-paused', function(element) {
+		let button = $(element.target);
+
+		if(!button.hasClass('btn-stop')) {
+			button.prev('button').text('Loading');
+		}
+
 	});
 
-}
-
-export function deleteLocalPausedCompetition(competitionId) {
-	chrome.storage.local.get('pausedCompetitions', data => {
-		console.log(`Paused before check:`, data.pausedCompetitions);
-
-		// If competitionID not equals stored IDs leave them in Array.
-		data.pausedCompetitions = $.grep(data.pausedCompetitions || [], function(value) {
-			for (let key in value) {
-				if(key === 'id') {
-					// console.log(`${value[key]} !== ${competitionId} ? = ${value[key] !== competitionId}`);
-					return value[key] !== competitionId;
-				}
-			}
-		});
-
-		console.log(`Paused after check:`, data.pausedCompetitions);
-
-		chrome.storage.local.set(data, () => {
-			// Competition data is now stored
-			console.log(`Deleted Local Paused Competition: ${competitionId}`);
-			checkLocalStorage();
-			// Find saved competition and style
-			// let requiredElement = '#enrolled-competitions-region .competitions-table-rows tr td.comp-image-container';
-			// let existingRows = $(requiredElement).length;
-			// waitForElementUpdate(existingRows, requiredElement, updateEnrolledCompetitions, false);
-		})
-	});
 }
 
 async function savePausedCompetition(competitionId, competitionRow) {
-	console.log(`PAUSED competition:`, competitionId);
-	// clearLocalStorage();
-
 	let id = competitionId;
 
-	let tempIcons = competitionRow.find('.comp-image-container div').attr("class").split(/\s+/);
-	let icons = tempIcons.join(' ');
+	chrome.storage.local.get('savedCompetitions', data => {
+		// If competition Paused, add more data to Saved
+		data.savedCompetitions.forEach(competition => {
+			if(competition.id === id) {
 
-	let title = competitionRow.find('.first a').text();
+				// Remove timer and show date
+				let tdElement = competitionRow.find('td');
+				let starts = tdElement.eq(4);
+				let ends = tdElement.eq(5);
+				starts.text(competition.starts);
+				ends.text(competition.ends);
 
-	let tempTags = competitionRow.find('.tags span');
-	let tags = tempTags.map(function() {
-		return $(this).text();
-	}).get();
+				// Adjust/Add more data to existing paused competition
+				competition.paused = true;
+				competition.finished = false;
+				competition.attemptsLeft = competitionRow.find('.tacenter').text().trim().split("/")[0].trim();
+				competition.attemptsTotal = competitionRow.find('.tacenter').text().trim().split("/")[1].trim();
+				competition.position = competitionRow.find('td').eq(3).text();
+			}
+		});
 
-	let attemptsLeft = competitionRow.find('.tacenter').text().trim().split("/")[0];
-	let attemptsTotal = competitionRow.find('.tacenter').text().trim().split("/")[1];
-
-	let tdElement = competitionRow.find('td');
-	let position = tdElement.eq(3).text();
-	let starts = tdElement.eq(4).text();
-	let ends = tdElement.eq(5).text();
-	let status = tdElement.eq(6).text();
-
-	let selectedCompetition = {
-		id,
-		icons,
-		title,
-		tags,
-		attemptsLeft,
-		attemptsTotal,
-		position,
-		starts,
-		ends,
-		status
-	}
-
-	chrome.storage.local.get('pausedCompetitions', data => {
-		data.pausedCompetitions = [].concat(data.pausedCompetitions || [], [selectedCompetition]);
+		// data.savedCompetitions.paused = true;
 		chrome.storage.local.set(data, () => {
 			// Competition data is now stored
-			console.log(`Added Paused competition to pausedCompetitions: ${competitionId}`);
+			console.log(`Updated SAVE as PAUSED: ${competitionId}`);
 			checkLocalStorage();
 			deactivateCompetition(id);
 		})
+
+		return id;
 	});
-
-	return competitionId;
-
-/*	return new Promise((resolve) => {
-		chrome.storage.local.get('pausedCompetitions', data => {
-			data.pausedCompetitions = [].concat(data.pausedCompetitions || [], [selectedCompetition]);
-			chrome.storage.local.set(data, () => {
-				// Competition data is now stored
-				console.log(`Added Paused competition to pausedCompetitions: ${competitionId}`);
-				resolve(data);
-				checkLocalStorage();
-			})
-		});
-	});*/
 
 }
 
 // NAUDOTI VISU PAUSED/SAVED ATKURIMUI
-function addLoadedPausedCompetitionRows(data) {
+function addLoadedPausedCompetitionRows(savedCompetitions) {
 
-	if (typeof data !== "undefined") {
-
+	if (typeof savedCompetitions !== "undefined") {
 		//Fix issue with duplicated rows, which marked as active.. (even they are paused)
 		let enrolledList = $('#enrolled-competitions-region .competitions-table-rows tr .action .btn-leave');
 
-			data.forEach(rowData => {
+			savedCompetitions.forEach(rowData => {
+				// Only Paused will be adjusted/fixed
+				if(rowData.paused) {
+					console.log(`Now adding paused row`, rowData);
 
-				enrolledList.each(function() {
-					let id = $(this).data('cmpid');
+					enrolledList.each(function() {
+						let id = $(this).data('cmpid');
+						if(id === rowData.id) {
+							console.log(`Paused and Active bug fix for`, id);
+							$(this).closest('tr').remove();
+							let counterTitle = $('#enrolled-competitions-region h4 span');
+							let currentCounter = counterTitle.text();
+							counterTitle.text(currentCounter - 1);
+						}
+					});
 
-					if(id === rowData.id) {
-						console.log(`Paused and Active bug fix for`, id);
-						$(this).closest('tr').remove();
-					}
-				});
+					let htmlTags = ``;
 
-				let htmlTags = ``;
+					// console.log(`Data which will be loaded as pause`, rowData);
 
-				console.log(`Data which will be loaded as pause`, rowData);
+					rowData.tags.forEach(tag => {
+						htmlTags += `<span class="species-tag">${tag}</span>`;
+					});
 
-				rowData.tags.forEach(tag => {
-					htmlTags += `<span class="species-tag">${tag}</span>`;
-				});
-
-				//<button class="btn btn-secondary btn-pause active" data-cmpid="${rowData.id}" type="button">❚❚</button>
-				let template =
-					`<tr>
+					//<button class="btn btn-secondary btn-pause active" data-cmpid="${rowData.id}" type="button">❚❚</button>
+					let template =
+						`<tr>
 						<td class="row-icon comp-image-container">
 							<div class="${rowData.icons}"></div>
 						</td>
@@ -262,7 +232,8 @@ function addLoadedPausedCompetitionRows(data) {
 						</td>
 					</tr>`;
 
-				$('#enrolled-competitions-region .competitions-table-rows').prepend(template);
+					$('#enrolled-competitions-region .competitions-table-rows').prepend(template);
+				}
 			});
 	}
 }
@@ -281,5 +252,4 @@ async function deactivateCompetition(id) {
 	fetch(`https://api.thehunter.com/v1/Competition/leave?id=${competitionId}&oauth_access_token=${playerAuth}`, requestOptions)
 		.then(response => response.text())
 		.catch(error => console.log('error', error));
-
 }

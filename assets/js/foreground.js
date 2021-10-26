@@ -11,8 +11,11 @@ import {
 } from './utilities/extension/helpers';
 
 import { activateStatsLastTables } from './statistics/last/sorterContentPage';
-import { activateCompetitionStyle } from './competition/competitionPage';
-import {activateCompetitionHistory} from "./competition/competitionHistory";
+import {activateCompetitionStyle} from './competition/competitionPage';
+import {
+    activateCompetitionHistory,
+    storeServerCompetitionData
+} from "./competition/competitionHistory";
 import { addFriendsModule } from './friends/friendsPage';
 import { addProfileLodges } from './lodge/lodgePage';
 import { activateMissions } from './mission/missionPage';
@@ -43,6 +46,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         activateStatsLastTables();
     }
     if (request.todo === 'styleCompetition') {
+        storeServerCompetitionData();
         activateCompetitionStyle();
         activateCompetitionHistory();
     }

@@ -1,199 +1,390 @@
-import {checkElementLoaded, checkPageLoaded, clearLocalStorage} from "../utilities/extension/helpers";
-import {activateCompetitionSave, deleteSavedCompetition, saveSelectedCompetition} from "./competitionSave";
-import {activateCompetitionPause } from "./competitionPause";
-import {showActiveCompetitionIndicator} from "./competitionPage";
+import moment from 'moment';
 
+import {checkElementLoaded, checkPageLoaded, clearLocalStorage} from "../utilities/extension/helpers";
+import {
+	activateCompetitionSave,
+	deleteSavedCompetition,
+	getLocalSavedCompetitions,
+	saveSelectedCompetition
+} from "./competitionSave";
+import {activateCompetitionPause} from "./competitionPause";
+import {
+	fixPausedCompetitionLeaveBtn,
+	getEnrolledCompetitionsCount, getServerCompetitions,
+	hideIfExistCompetitionActiveButtons, hideIfExistSavedTable,
+	markActivatedAnimals,
+	scrollToClickedCompetition, selectedAnimalIndicatorReset,
+	tagSelectedAnimal, updateTitleAllListedCompetitions
+} from "./competitionPage";
+
+export let serverData;
+export async function storeServerCompetitionData() {
+	serverData = await getServerCompetitions();
+}
+
+// INIT Competition functions Pause/Save
 export function activateCompetitionHistory() {
 	checkElementLoaded('#competitions-list-region .competitions-table-rows', function () {
+		console.log(`INIT activated`);
 		if (!$('#competitions-tab-region ul .helper_cmpHistory').length) {
+			console.log(`REAL INITIALIZATION`);
 			activateCompetitionPause();
 			activateCompetitionSave();
-			showActiveCompetitionIndicator();
-			activateCompetitionButtons();
+			markActivatedAnimals();
+			activateCompetitionPageButtons();
+			console.log(`Page loaded with`, serverData);
 		}
 	});
 }
 
-function activateCompetitionButtons() {
-
-	$('#page-competitions').on('click', '.btn-join', function(element) {
-		console.log(`joined competition..`);
-
-		let existingRowsCount;
-		let requiredElement = $('#enrolled-competitions-region .competitions-table-rows tr td.comp-image-container');
-		let savedElement = $('#enrolled-competitions-region .competitions-table-rows tr .btn-paused')
-
-		if(savedElement.length > 0) {
-			existingRowsCount = requiredElement.length + savedElement.length;
-		} else {
-			existingRowsCount = requiredElement.length;
-		}
-
+function activateCompetitionPageButtons() {
+	let competitionsPage = $('#page-competitions');
+	// JOIN/Activate button adds animal to Saved list
+	competitionsPage.on('click', '.btn-join', function(element) {
+		let existingRowsCount = getEnrolledCompetitionsCount();
 		let button = $(element.target);
+		let competitionRow = button.closest('tr');
 		let competitionId = button.data('cmpid');
-		console.log(`Clicked competition: `, competitionId);
 		button.text('Loading');
 
-		// For TEST
-		//clearLocalStorage();
-
+		// Wait for indicator website completed actions
 		let intervalChecker = setInterval(() => {
-			console.log(`button..`, button.text());
 			if (button.text() === 'Deactivate') {
 				clearInterval(intervalChecker);
-				saveSelectedCompetition(competitionId, existingRowsCount);
-				fixActiveAnimalIndicator();
+				saveSelectedCompetition(competitionId, competitionRow, existingRowsCount);
+				selectedAnimalIndicatorReset();
 			}
 		}, 100);
 
 	});
 
-	$('#page-competitions').on('click', '.btn-leave', function(element) {
-		console.log(`leaving competition..`);
-
-		let existingRowsCount;
-		let requiredElement = $('#enrolled-competitions-region .competitions-table-rows tr td.comp-image-container');
-		let savedElement = $('#enrolled-competitions-region .competitions-table-rows tr .btn-paused')
-
-		if(savedElement.length > 0) {
-			existingRowsCount = requiredElement.length + savedElement.length;
-		} else {
-			existingRowsCount = requiredElement.length;
-		}
-
+	// LEAVE/Deactivate button deletes animal from Saved list
+	competitionsPage.on('click', '.btn-leave', function(element) {
+		// let existingRowsCount = getEnrolledCompetitionsCount();
 		let button = $(element.target);
-		let competitionId = button.data('cmpid');
 
-		let intervalChecker = setInterval(() => {
-			if (button.hasClass('btn-join')) {
-				clearInterval(intervalChecker);
-				deleteSavedCompetition(competitionId, existingRowsCount);
-				fixActiveAnimalIndicator();
+		if(!button.hasClass('btn-stop')) {
+			console.log(`Leaving competition..`);
+
+			let competitionId = button.data('cmpid');
+
+			console.log(`this.. ${competitionId}`);
+
+			if(button.hasClass('btn-paused')) {
+				console.log(`current text.. ${button.text()}`);
+				button.text('...');
+			} else {
+				button.text('Loading');
 			}
-		}, 100);
 
+			// Wait for indicator website completed actions
+			let intervalChecker = setInterval(() => {
+				console.log(`turi class?`, button.hasClass('btn-join'));
+
+				if (button.hasClass('btn-join')) {
+					console.log(`Btn changed to join..`);
+					clearInterval(intervalChecker);
+					// deleteSavedCompetition(competitionId, existingRowsCount);
+					deleteSavedCompetition(competitionId);
+					selectedAnimalIndicatorReset();
+				}
+
+			}, 100);
+		}
 	});
 
-	$('#page-competitions').on('click', '.compSelectSpecies', function(element) {
+	// If user selectes different animal, adjust Markers
+	competitionsPage.on('click', '.compSelectSpecies', function(element) {
 		hideIfExistCompetitionActiveButtons();
-		showActiveCompetitionIndicator();
+		markActivatedAnimals();
 	});
 
-	$('#page-competitions').on('click', '.helper_cmpHistory', function(element) {
+	// If user selects TAB (preview saved competitions)
+	competitionsPage.on('click', '.helper_cmpHistory', function(element) {
 		element.preventDefault();
 		console.log(`History tab selected`);
-		// SHOW CLEAR PAGE
+		// PREPARE TO EMPTY PAGE
 		$('#competitions-filter-region').css({'display': 'none'});
 		$('#competitions-campaign-description').css({'display': 'none'});
 		$('#competitions-pagination-region').css({'display': 'none'});
-		$('#competitions-list-region .competitions-table-rows tr').css({'display': 'none'});
+		$('#competitions-list-region .competitions-table').css({'display': 'none'});
 
-		// LOAD SAVED DATA
-		// LOAD SERVER DATA
-		// CHECK IF FINISHED. BASED ON THAT SET SAVE POSITION
-		// IF NOT EXIST IN SERVER. MARK DIFFERENT COLOR
-		// LIST BY ID
+		let activeAnimalBanner = $('.competition-list-banner');
+		if(activeAnimalBanner.length) {
+			activeAnimalBanner.remove();
+		}
+
+		showSavedInHistoryCompetitions();
 	});
 
-	$('#page-competitions').on('click', '.tab', function(element) {
+	// RESET BACK TO DEFAULT TAB VIEW (Except custom 'saved' tab)
+	competitionsPage.on('click', '.tab', function(element) {
+
+		fixPausedCompetitionLeaveBtn();
+		updateTitleAllListedCompetitions();
+
 		if (!$(element.target).hasClass('helper_cmpHistory')) {
-			console.log(`ne history tabas`);
-			showActiveCompetitionIndicator();
+			hideIfExistCompetitionActiveButtons();
+			markActivatedAnimals();
+			hideIfExistSavedTable();
 			$('#competitions-filter-region').css({'display': 'block'});
 			$('#competitions-campaign-description').css({'display': 'block'});
 			$('#competitions-pagination-region').css({'display': 'block'});
-			$('#competitions-list-region .competitions-table-rows tr').css({'display': 'table-row'});
+			$('#competitions-list-region .competitions-table').css({'display': 'table'});
 		}
 	});
 
-	$('#page-competitions').on('click', '.btn-enrolled', function(element) {
-		let competitionId = $(element.target).data('cmpid');
+	// Fast scroll to selected competition after clicking enrolled or paused buttons
+	competitionsPage.on('click', '.btn-enrolled, .paused_competition', function(element) {
+		scrollToClickedCompetition(element);
+	});
 
-		$('html, body').animate({
-			scrollTop: $('#page-competitions').offset().top - 100
-		}, 150);
+	// Activate specific animal from the tags
+	competitionsPage.on('click', '#enrolled-competitions-region .species-tag', function(element) {
+		tagSelectedAnimal(element);
+	});
 
-		let targetLine = $(`#enrolled-competitions-region tr [data-cmpid="${competitionId}"]`).first().closest('tr');
-		let notifyChanges = targetLine
-			.css({backgroundColor: '#f9370d'})
-			.show()
-		setTimeout(function(){
-			notifyChanges.css({backgroundColor: ''});
-		},750);
-
+	competitionsPage.on('click', '#competitions-list-region .btn-delete_save', function(element) {
+		let button = $(element.target);
+		let competitionId = button.data('cmpid');
+		deleteSavedCompetition(competitionId);
 	});
 }
 
-export function fixActiveAnimalIndicator() {
-	checkPageLoaded(function () {
-		let selectedAnimal = $('#competitions-filter-region button.compSelectSpecies.active');
-		if (selectedAnimal) {
-			selectedAnimal.removeClass('active');
-			let counterColor = selectedAnimal.find('span');
-			counterColor.each(item => {
-				if (!$(item).hasClass('animalEnrolled_counter')) {
-					$(item).css({'background': '#ccc'});
-				}
-			})
+async function showSavedInHistoryCompetitions() {
 
-			$('.competition-list-banner').remove();
-		}
+	// let activeCompetitions = [];
+	let savedCompetitions = await getLocalSavedCompetitions();
+	// Test example
+	savedCompetitions.push({
+		"attemptsLeft": "2",
+		"attemptsTotal": "5",
+		"description": "Harvest random lol",
+		"ends": "Oct 26th 10:00 EEST",
+		"icons": "compthumb comp_special",
+		"id": 666,
+		"paused": true,
+		"finished": true,
+		"playersCount": "100",
+		"position": "N/A",
+		"starts": "Oct 22nd 10:00 EEST",
+		"tags": [
+			"Whitetail Deer (Typical)",
+			"Single player"
+		],
+		"timestampEnd": 1635083850,
+		"timestampStart": 1634886000,
+		"title": "TEST #1"
 	});
-}
-
-export function hideIfExistCompetitionActiveButtons() {
-	checkElementLoaded('#competitions-list-region .competitions-table-rows', function () {
-		console.log(`hide existing active buttons??`);
-
-		if ($('#competitions-list-region .competitions-table-rows .action .btn-leave').length ||
-			$('#enrolled-competitions-region .competitions-table-rows .action .btn-paused').length) {
-			console.log(`Hidding listing buttons..`);
-			hideCompetitionAlreadyActiveButtons();
-		}
+	savedCompetitions.push({
+		"attemptsLeft": "5",
+		"attemptsTotal": "5",
+		"description": "Harvest Something.",
+		"ends": "Oct 26th 10:00 EEST",
+		"icons": "compthumb comp_special",
+		"id": 123123,
+		"paused": false,
+		"finished": true,
+		"playersCount": "6",
+		"position": "N/A",
+		"starts": "Oct 22nd 10:00 EEST",
+		"tags": [
+			"Whitetail Deer (Typical)",
+			"Single player"
+		],
+		"timestampEnd": 1635083750,
+		"timestampStart": 1634886000,
+		"title": "TEST #2"
 	});
-}
+	savedCompetitions.push({
+		"attemptsLeft": "0",
+		"attemptsTotal": "1",
+		"description": "Pickup mushrooms.",
+		"ends": "Oct 26th 10:00 EEST",
+		"icons": "compthumb comp_special",
+		"id": 99999,
+		"paused": false,
+		"finished": true,
+		"playersCount": "123",
+		"position": "N/A",
+		"starts": "Oct 22nd 10:00 EEST",
+		"tags": [
+			"Whitetail Deer (Typical)",
+			"Single player"
+		],
+		"timestampEnd": 1635231600,
+		"timestampStart": 1634886000,
+		"title": "TEST #3"
+	});
 
-export function hideCompetitionAlreadyActiveButtons() {
-	checkElementLoaded('#competitions-list-region .competitions-table-rows', function () {
+	// let serverCompetitions = await getServerCompetitions();
+	let serverCompetitions = serverData;
+	console.log(`server data:`, serverCompetitions);
 
-		let enrolledComps = $('#enrolled-competitions-region .competitions-table-rows .btn-join');
-		let listedComps = $('#competitions-list-region .competitions-table-rows tr');
+	// Sort by END time
+	savedCompetitions.sort( compare );
 
-		let listEnrolledIds = [];
-		enrolledComps.each(function() {
-			listEnrolledIds.push($(this).data('cmpid'));
-		});
+	// Find still Active competitions, by comparing Saved and Server data
+	$.each(serverCompetitions, function (i, serverCompetition) {
+		savedCompetitions.forEach( (item, index) => {
+			if(item.id === serverCompetition.id) {
+				// Add still active competitions
+				// activeCompetitions.push(item);
+				// Remove from existing list (Leave only not found competitions. Not found = Finished)
+				savedCompetitions.splice(index,1);
 
-		listedComps.each(function (index, element) {
-			let button = $(element).find('.action button');
-			let listedCompId = button.data('cmpid');
+				// savedCompetitions[index]['tags'] = serverCompetition.entrants;
+				// activeCompetitions[activeCompetitions.length-1].icons = item.icons;
+			}
+		} );
+	});
 
-			if(button.hasClass('btn-leave')) {
-				button.text(`Enrolled`);
-				button.addClass('btn-enrolled');
-				button.removeClass('btn-secondary btn-leave');
-				// button.removeAttr('data-cmpid');
-				return; // Check next iteration
+
+	// console.log(`STILL ACTIVE:`, activeCompetitions);
+	console.log(`FINISHED: `, savedCompetitions);
+
+	// GROUP COMPETITIONS WITH SAME EVENT, AND SHOW TIMER
+	let tableTemplate = `
+	<table class="table save_competitions-table">
+		<thead>
+			<tr>
+				<th colspan="2" class="save_title">Competition Name</th>
+				<th class="data_item save_players">Players</th>
+				<th class="data_item save_ends">End date</th>
+				<th class="data_item save_status">Status</th>
+				<th class="data_item save_attempts">Attempts</th>
+				<th class="data_item save_action">Action</th>
+			</tr>
+		</thead>
+		<tbody class="save_competitions-table-rows"></tbody>
+	</table>`;
+
+	$('#competitions-list-region .comps-list').prepend(tableTemplate);
+
+
+	savedCompetitions.forEach(function(competition) {
+		if(competition.finished) {
+			let gamesCount = competition.attemptsTotal - competition.attemptsLeft;
+			let gameStatus = 'Skipped';
+			if(gamesCount > 0) {
+				gameStatus = 'Played';
 			}
 
-			if(button.hasClass('btn-join')) {
-				listEnrolledIds.forEach(id => {
-					if(id === listedCompId) {
-						console.log(`ID found: ${id} and listedId ${listedCompId}, marking inactive..`);
-						button.text(`Paused`);
-						button.addClass('btn-saved paused_competition');
-						button.removeClass('btn-primary btn-join');
-						$(element).find('.first a').addClass('paused_competition');
-						// button.removeAttr('data-cmpid');
+			let htmlTags = ``;
+
+			competition.tags.forEach(tag => {
+				htmlTags += `<span class="species-tag">${tag}</span>`;
+			});
+
+			let rowTemplate = `
+				<tr class="save_row">
+					<td class="row-icon comp-image-container">
+						<div class="${competition.icons}"></div>
+					</td>
+					<td class="row-title animal_item first">
+						<a href="#competitions/details/${competition.id}" class="save_row-title">${competition.title}</a>
+						<div class="tags">
+							${htmlTags}
+						</div>
+						<p class="competition-description save_row-description">${competition.description}</p>	
+					</td>
+					<td class="row-players data_item tacenter save_row-players">${competition.playersCount}</td>
+					<td class="row-starts data_item save_row-countdown">${competition.ends}</td>
+					<td class="row-starts data_item save_row-status">${gameStatus}</td>
+					<td class="row-starts data_item save_row-attempts">${gamesCount}</td>
+					<td class="row-action data_item action save_row-action">
+	<!--					ADD REMINDER BUTTON? -->
+<!--	CREATE NEW TAB WHERE PLAYER WON? -->
+<!-- ALLOW TO INCLUDE COMPETITIONS WHERE PLAYER WON? -->
+						<button class="btn btn-delete_save" data-cmpid="${competition.id}" type="button" title="Remove save">X</button>
+					</td>
+				</tr>
+			`;
+
+			$('#competitions-list-region .save_competitions-table-rows').prepend(rowTemplate);
+		}
+	});
+
+	// ~~~~ NUSPALVINTI COMPETITION KURIO STATUS STARTED	~~~~
+	// ~~~ PAZYMETI KAD FINISHED JEIGU COMPETITION NERASTAS SERVERYJE ARBA BAIGESI LAIKAS ~~~~
+
+	// IF NOT EXIST IN SERVER. MARK DIFFERENT COLOR AND LOAD PAUSED DATA
+	// let pausedCompetitions = await getLocalPausedCompetitions();
+	// if (typeof pausedCompetitions === "undefined") {
+	// 	console.log(`Not found paused competitions`);
+	// } else {
+	// 	console.log(`Found paused.. Adding data which is FINISHED`);
+	// }
+	// LIST BY ID finished competitions
+}
+
+function compare( a, b ) {
+	if ( a.end < b.end ){
+		return -1;
+	}
+	if ( a.end > b.end ){
+		return 1;
+	}
+	return 0;
+}
+
+export function addTimerForCompetitions(data) {
+	const savedCompetitions = data.savedCompetitions;
+	const competitionRow = data.enrolledList;
+
+	if (typeof savedCompetitions !== "undefined") {
+
+		savedCompetitions.forEach( (savedCompetition) => {
+			if(!savedCompetition.paused) {
+				competitionRow.each(function() {
+					let target = $(this).find('button');
+					let tdElement = $(this).find('td');
+					let starts = tdElement.eq(4);
+					let ends = tdElement.eq(5);
+
+					let competitionId = target.data('cmpid');
+					if(savedCompetition.id === competitionId) {
+						let currentTime = Math.floor(Date.now() / 1000);
+						// console.log(`TIMER ID: ${savedCompetition.id} Start ${savedCompetition.timestampStart} End: ${savedCompetition.timestampEnd} Now: ${Math.floor(Date.now() / 1000)}`);
+						// Show countdown based if competition started
+						if(currentTime < savedCompetition.timestampStart) {
+							calculateTime(savedCompetition.timestampStart, starts);
+							ends.text('');
+						}
+						if(currentTime > savedCompetition.timestampStart) {
+							calculateTime(savedCompetition.timestampEnd, ends);
+							starts.text('');
+						}
+
 					}
 				});
 			}
-		});
-	});
 
-	showActiveCompetitionIndicator();
+		});
+	}
+	return savedCompetitions;
 }
 
-function movePausedButFinishedToSave(id) {
-	console.log(`This ID not found in List, but exist in enrolled:`, id);
+export function calculateTime(timestamp, zone) {
+	let eventTime= timestamp;
+	let currentTime = Math.floor(Date.now() / 1000);
+	let diffTime = eventTime - currentTime;
+	let duration = moment.duration(diffTime*1000, 'milliseconds');
+	let interval = 1000;
+
+	setInterval(function(){
+		duration = moment.duration(duration - interval, 'milliseconds');
+
+		let days = duration.days();
+		let hours = duration.hours();
+		let minutes = duration.minutes();
+		let seconds = duration.seconds();
+
+		let duration_d = days < 1 ? `` : `${days}d`;
+		let duration_h = hours < 10 ? `0${hours}h` : `${hours}h`;
+		let duration_m = minutes < 10 ? `0${minutes}m` : `${minutes}m`;
+		let duration_s = seconds < 10 ? `0${seconds}s` : `${seconds}s`;
+
+		zone.text(`${duration_d} ${duration_h} ${duration_m} ${duration_s}`);
+	}, interval);
 }

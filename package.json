@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "jquery": "^3.6.0",
+    "moment": "^2.29.1",
     "tabulator-tables": "^4.9.3"
   }
 }
