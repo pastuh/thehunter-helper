@@ -198,11 +198,10 @@ export function hideIfExistCompetitionActiveButtons() {
 
     checkElementLoaded('#competitions-list-region .competitions-table-rows', function () {
 
-        console.log(`triggered hide if exist`);
         if ($('#competitions-list-region .competitions-table-rows .action .btn-leave').length ||
             $('#enrolled-competitions-region .competitions-table-rows .action .btn-paused').length) {
 
-            console.log(`Hide If Exist Competition Active buttons`);
+            console.log(`Competitions gets button styles`);
 
             let enrolledComps = $('#enrolled-competitions-region .competitions-table-rows .btn-join');
             let listedComps = $('#competitions-list-region .competitions-table-rows tr');
@@ -338,9 +337,6 @@ export function infoAboutEmptyCompetitionPage() {
 export function hideIfExistSavedTable() {
     checkPageLoaded(function() {
         let saveTable = $('#competitions-list-region .save_competitions-table');
-
-        console.log(`Clicked tab`);
-        console.log(saveTable.length);
 
         if(saveTable.length) {
             saveTable.remove();

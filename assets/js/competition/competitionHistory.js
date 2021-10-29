@@ -1,6 +1,11 @@
 import moment from 'moment';
 
-import {checkElementLoaded, checkPageLoaded, clearLocalStorage} from "../utilities/extension/helpers";
+import {
+	checkElementLoaded,
+	checkLocalStorage,
+	checkPageLoaded,
+	clearLocalStorage
+} from "../utilities/extension/helpers";
 import {
 	activateCompetitionSave,
 	deleteSavedCompetition,
@@ -25,7 +30,6 @@ export async function storeServerCompetitionData() {
 // INIT Competition functions Pause/Save
 export function activateCompetitionHistory() {
 	checkElementLoaded('#competitions-list-region .competitions-table-rows', function () {
-		console.log(`INIT activated`);
 		if (!$('#competitions-tab-region ul .helper_cmpHistory').length) {
 			console.log(`REAL INITIALIZATION`);
 			activateCompetitionPause();
@@ -85,7 +89,7 @@ function activateCompetitionPageButtons() {
 					console.log(`Btn changed to join..`);
 					clearInterval(intervalChecker);
 					// deleteSavedCompetition(competitionId, existingRowsCount);
-					deleteSavedCompetition(competitionId);
+					deleteSavedCompetition(competitionId, 'leaveCompetition');
 					selectedAnimalIndicatorReset();
 				}
 
@@ -146,8 +150,9 @@ function activateCompetitionPageButtons() {
 
 	competitionsPage.on('click', '#competitions-list-region .btn-delete_save', function(element) {
 		let button = $(element.target);
+		button.closest('tr').remove();
 		let competitionId = button.data('cmpid');
-		deleteSavedCompetition(competitionId);
+		deleteSavedCompetition(competitionId, 'removeSave');
 	});
 }
 
@@ -155,96 +160,81 @@ async function showSavedInHistoryCompetitions() {
 
 	// let activeCompetitions = [];
 	let savedCompetitions = await getLocalSavedCompetitions();
+
 	// Test example
-	savedCompetitions.push({
-		"attemptsLeft": "2",
-		"attemptsTotal": "5",
-		"description": "Harvest random lol",
-		"ends": "Oct 26th 10:00 EEST",
-		"icons": "compthumb comp_special",
-		"id": 666,
-		"paused": true,
-		"finished": true,
-		"playersCount": "100",
-		"position": "N/A",
-		"starts": "Oct 22nd 10:00 EEST",
-		"tags": [
-			"Whitetail Deer (Typical)",
-			"Single player"
-		],
-		"timestampEnd": 1635083850,
-		"timestampStart": 1634886000,
-		"title": "TEST #1"
-	});
-	savedCompetitions.push({
-		"attemptsLeft": "5",
-		"attemptsTotal": "5",
-		"description": "Harvest Something.",
-		"ends": "Oct 26th 10:00 EEST",
-		"icons": "compthumb comp_special",
-		"id": 123123,
-		"paused": false,
-		"finished": true,
-		"playersCount": "6",
-		"position": "N/A",
-		"starts": "Oct 22nd 10:00 EEST",
-		"tags": [
-			"Whitetail Deer (Typical)",
-			"Single player"
-		],
-		"timestampEnd": 1635083750,
-		"timestampStart": 1634886000,
-		"title": "TEST #2"
-	});
-	savedCompetitions.push({
-		"attemptsLeft": "0",
-		"attemptsTotal": "1",
-		"description": "Pickup mushrooms.",
-		"ends": "Oct 26th 10:00 EEST",
-		"icons": "compthumb comp_special",
-		"id": 99999,
-		"paused": false,
-		"finished": true,
-		"playersCount": "123",
-		"position": "N/A",
-		"starts": "Oct 22nd 10:00 EEST",
-		"tags": [
-			"Whitetail Deer (Typical)",
-			"Single player"
-		],
-		"timestampEnd": 1635231600,
-		"timestampStart": 1634886000,
-		"title": "TEST #3"
-	});
+	/*if (typeof savedCompetitions !== "undefined") {
+		savedCompetitions.push({
+			"attemptsLeft": "2",
+			"attemptsTotal": "5",
+			"description": "Harvest random lol",
+			"ends": "Oct 26th 10:00 EEST",
+			"icons": "compthumb comp_special",
+			"id": 666,
+			"paused": true,
+			"finished": true,
+			"playersCount": "100",
+			"position": "N/A",
+			"starts": "Oct 22nd 10:00 EEST",
+			"tags": [
+				"Whitetail Deer (Typical)",
+				"Single player"
+			],
+			"timestampEnd": 1635083850,
+			"timestampStart": 1634886000,
+			"title": "TEST #1"
+		});
+		savedCompetitions.push({
+			"attemptsLeft": "5",
+			"attemptsTotal": "5",
+			"description": "Harvest Something.",
+			"ends": "Oct 26th 10:00 EEST",
+			"icons": "compthumb comp_special",
+			"id": 123123,
+			"paused": false,
+			"finished": true,
+			"playersCount": "6",
+			"position": "N/A",
+			"starts": "Oct 22nd 10:00 EEST",
+			"tags": [
+				"Whitetail Deer (Typical)",
+				"Single player"
+			],
+			"timestampEnd": 1635083750,
+			"timestampStart": 1634886000,
+			"title": "TEST #2"
+		});
+	}*/
 
 	// let serverCompetitions = await getServerCompetitions();
 	let serverCompetitions = serverData;
 	console.log(`server data:`, serverCompetitions);
 
-	// Sort by END time
-	savedCompetitions.sort( compare );
 
-	// Find still Active competitions, by comparing Saved and Server data
-	$.each(serverCompetitions, function (i, serverCompetition) {
-		savedCompetitions.forEach( (item, index) => {
-			if(item.id === serverCompetition.id) {
-				// Add still active competitions
-				// activeCompetitions.push(item);
-				// Remove from existing list (Leave only not found competitions. Not found = Finished)
-				savedCompetitions.splice(index,1);
+	if (typeof savedCompetitions !== "undefined") {
+		// Sort by END time
+		savedCompetitions.sort( compare );
 
-				// savedCompetitions[index]['tags'] = serverCompetition.entrants;
-				// activeCompetitions[activeCompetitions.length-1].icons = item.icons;
-			}
-		} );
-	});
+		// Find still Active competitions, by comparing Saved and Server data
+		$.each(serverCompetitions, function (i, serverCompetition) {
+			savedCompetitions.forEach( (item, index) => {
+				if(item.id === serverCompetition.id) {
+					// Add still active competitions
+					// activeCompetitions.push(item);
+					// Remove from existing list (Leave only not found competitions. Not found = Finished)
+					savedCompetitions.splice(index,1);
+
+					// savedCompetitions[index]['tags'] = serverCompetition.entrants;
+					// activeCompetitions[activeCompetitions.length-1].icons = item.icons;
+				}
+			} );
+		});
 
 
-	// console.log(`STILL ACTIVE:`, activeCompetitions);
-	console.log(`FINISHED: `, savedCompetitions);
+		// console.log(`STILL ACTIVE:`, activeCompetitions);
+		console.log(`FINISHED: `, savedCompetitions);
 
-	// GROUP COMPETITIONS WITH SAME EVENT, AND SHOW TIMER
-	let tableTemplate = `
+		// GROUP COMPETITIONS WITH SAME EVENT, AND SHOW TIMER
+		let tableTemplate = `
 	<table class="table save_competitions-table">
 		<thead>
 			<tr>
@@ -259,30 +249,32 @@ async function showSavedInHistoryCompetitions() {
 		<tbody class="save_competitions-table-rows"></tbody>
 	</table>`;
 
-	$('#competitions-list-region .comps-list').prepend(tableTemplate);
+		$('#competitions-list-region .comps-list').prepend(tableTemplate);
 
 
-	savedCompetitions.forEach(function(competition) {
-		if(competition.finished) {
-			let gamesCount = competition.attemptsTotal - competition.attemptsLeft;
-			let gameStatus = 'Skipped';
-			if(gamesCount > 0) {
-				gameStatus = 'Played';
-			}
+		savedCompetitions.forEach(function(competition) {
+			if(competition.finished) {
+				let gamesCount = competition.attemptsTotal - competition.attemptsLeft;
+				let gameStatus = 'Skipped';
+				let playClass = '';
+				if(gamesCount > 0) {
+					gameStatus = 'Played';
+					playClass = 'played_competition';
+				}
 
-			let htmlTags = ``;
+				let htmlTags = ``;
 
-			competition.tags.forEach(tag => {
-				htmlTags += `<span class="species-tag">${tag}</span>`;
-			});
+				competition.tags.forEach(tag => {
+					htmlTags += `<span class="species-tag">${tag}</span>`;
+				});
 
-			let rowTemplate = `
+				let rowTemplate = `
 				<tr class="save_row">
 					<td class="row-icon comp-image-container">
 						<div class="${competition.icons}"></div>
 					</td>
 					<td class="row-title animal_item first">
-						<a href="#competitions/details/${competition.id}" class="save_row-title">${competition.title}</a>
+						<a href="#competitions/details/${competition.id}" class="save_row-title ${playClass}">${competition.title}</a>
 						<div class="tags">
 							${htmlTags}
 						</div>
@@ -290,7 +282,7 @@ async function showSavedInHistoryCompetitions() {
 					</td>
 					<td class="row-players data_item tacenter save_row-players">${competition.playersCount}</td>
 					<td class="row-starts data_item save_row-countdown">${competition.ends}</td>
-					<td class="row-starts data_item save_row-status">${gameStatus}</td>
+					<td class="row-starts data_item save_row-status ${playClass}">${gameStatus}</td>
 					<td class="row-starts data_item save_row-attempts">${gamesCount}</td>
 					<td class="row-action data_item action save_row-action">
 	<!--					ADD REMINDER BUTTON? -->
@@ -301,21 +293,11 @@ async function showSavedInHistoryCompetitions() {
 				</tr>
 			`;
 
-			$('#competitions-list-region .save_competitions-table-rows').prepend(rowTemplate);
-		}
-	});
+				$('#competitions-list-region .save_competitions-table-rows').prepend(rowTemplate);
+			}
+		});
+	}
 
-	// ~~~~ NUSPALVINTI COMPETITION KURIO STATUS STARTED	~~~~
-	// ~~~ PAZYMETI KAD FINISHED JEIGU COMPETITION NERASTAS SERVERYJE ARBA BAIGESI LAIKAS ~~~~
-
-	// IF NOT EXIST IN SERVER. MARK DIFFERENT COLOR AND LOAD PAUSED DATA
-	// let pausedCompetitions = await getLocalPausedCompetitions();
-	// if (typeof pausedCompetitions === "undefined") {
-	// 	console.log(`Not found paused competitions`);
-	// } else {
-	// 	console.log(`Found paused.. Adding data which is FINISHED`);
-	// }
-	// LIST BY ID finished competitions
 }
 
 function compare( a, b ) {
@@ -328,6 +310,60 @@ function compare( a, b ) {
 	return 0;
 }
 
+export function markPausedCompetitionAsFinished() {
+
+	let currentTime = Math.floor(Date.now() / 1000);
+
+	return new Promise((resolve) => {
+
+			chrome.storage.local.get('savedCompetitions', function (data) {
+
+				if (typeof data.savedCompetitions !== "undefined") {
+
+					data.savedCompetitions.forEach(savedCompetition => {
+
+						if(!savedCompetition.finished && savedCompetition.paused) {
+
+							if (currentTime > savedCompetition.timestampEnd) {
+								// Competition data is now stored
+								console.log(`PAUSED ${savedCompetition.id} marked as FINISHED and hidden from website`);
+								savedCompetition.finished = true;
+								let targetLine = $(`#enrolled-competitions-region tr [data-cmpid="${savedCompetition.id}"]`).first().closest('tr');
+								if(targetLine.length) {
+									targetLine.remove();
+								}
+							}
+						}
+
+						if(!savedCompetition.finished && !savedCompetition.paused) {
+							let targetLine = $(`#enrolled-competitions-region tr [data-cmpid="${savedCompetition.id}"]`).first().closest('tr');
+
+							if(currentTime < savedCompetition.timestampEnd) {
+
+								if(targetLine.length) {
+									let attemptsInfo = targetLine.find('.tacenter').text().split("/");
+									savedCompetition.attemptsLeft = attemptsInfo[0].trim();
+									savedCompetition.attemptsTotal = attemptsInfo[1].trim();
+									savedCompetition.position = targetLine.find('td').eq(3).text();
+								}
+							}
+						}
+
+					});
+
+					chrome.storage.local.set(data, () => {
+						checkLocalStorage();
+					})
+				}
+
+				resolve(data.savedCompetitions);
+			});
+
+	});
+
+
+}
+
 export function addTimerForCompetitions(data) {
 	const savedCompetitions = data.savedCompetitions;
 	const competitionRow = data.enrolledList;
@@ -335,33 +371,35 @@ export function addTimerForCompetitions(data) {
 	if (typeof savedCompetitions !== "undefined") {
 
 		savedCompetitions.forEach( (savedCompetition) => {
+
 			if(!savedCompetition.paused) {
-				competitionRow.each(function() {
-					let target = $(this).find('button');
-					let tdElement = $(this).find('td');
+				competitionRow.each(function () {
+
+					let row = $(this);
+					let target = row.find('button');
+					let tdElement = row.find('td');
 					let starts = tdElement.eq(4);
 					let ends = tdElement.eq(5);
 
 					let competitionId = target.data('cmpid');
-					if(savedCompetition.id === competitionId) {
+					if (savedCompetition.id === competitionId) {
 						let currentTime = Math.floor(Date.now() / 1000);
 						// console.log(`TIMER ID: ${savedCompetition.id} Start ${savedCompetition.timestampStart} End: ${savedCompetition.timestampEnd} Now: ${Math.floor(Date.now() / 1000)}`);
 						// Show countdown based if competition started
-						if(currentTime < savedCompetition.timestampStart) {
+						if (currentTime < savedCompetition.timestampStart) {
 							calculateTime(savedCompetition.timestampStart, starts);
 							ends.text('');
 						}
-						if(currentTime > savedCompetition.timestampStart) {
+						if (currentTime > savedCompetition.timestampStart) {
 							calculateTime(savedCompetition.timestampEnd, ends);
 							starts.text('');
 						}
-
 					}
 				});
 			}
-
 		});
 	}
+
 	return savedCompetitions;
 }
 

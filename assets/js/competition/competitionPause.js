@@ -12,14 +12,13 @@ import {
 } from "./competitionPage";
 import {markActivatedAnimals} from "./competitionPage";
 import {getLocalSavedCompetitions} from "./competitionSave";
-import {addTimerForCompetitions} from "./competitionHistory";
+import {addTimerForCompetitions, markPausedCompetitionAsFinished} from "./competitionHistory";
 
 export function activateCompetitionPause() {
-	console.log(`Activating competitions pause..`);
-	getLocalSavedCompetitions()
+	markPausedCompetitionAsFinished()
+		.then((data) => addLoadedPausedCompetitionRows(data))
 		.then((data) => adjustEnrolledCompetitionTitle(data))
 		.then((data) => addTimerForCompetitions(data))
-		.then((data) => addLoadedPausedCompetitionRows(data))
 		.then(() => addPauseToCompetitionRow())
 		.then(() => hideIfExistCompetitionActiveButtons())
 		.then(() => activatePauseCompetitionButtons())
@@ -28,18 +27,16 @@ export function activateCompetitionPause() {
 
 export async function repeatGetLocalPausedCompetitions() {
 	console.log(`Repeating get local paused comps..`);
-	getLocalSavedCompetitions()
+	markPausedCompetitionAsFinished()
+		.then((data) => addLoadedPausedCompetitionRows(data))
 		.then((data) => adjustEnrolledCompetitionTitle(data))
 		.then((data) => addTimerForCompetitions(data))
-		.then((data) => addLoadedPausedCompetitionRows(data))
 		.then(() => markActivatedAnimals());
 }
 
 function adjustEnrolledCompetitionTitle(savedCompetitions) {
 
-		//clearLocalStorage();
-
-		console.log(`Calculating new Title`, savedCompetitions);
+		// clearLocalStorage();
 
 		let enrolledList = $('#enrolled-competitions-region .competitions-table-rows tr');
 		let realEnrolled = enrolledList.find('button.btn-secondary.btn-leave');
@@ -52,10 +49,11 @@ function adjustEnrolledCompetitionTitle(savedCompetitions) {
 			console.log(`-no SAVED competitions`);
 			counter = `${totalRows}`;
 		} else {
+			console.log(`Current saved competitions`, savedCompetitions);
 
 			counter = totalRows;
 			savedCompetitions.forEach( (item, index) => {
-				if(item.paused) {
+				if(item.paused && !item.finished) {
 					counter += 1;
 					existPaused = true;
 				}
@@ -86,6 +84,22 @@ export function addPauseToCompetitionRow() {
 	let elementTarget = $('#enrolled-competitions-region .competitions-table-rows tr');
 	elementTarget.each(function () {
 		let target = $(this).find('button');
+
+		console.log(`Adding nice color..`);
+		let row = target.closest('tr');
+		if(row.length) {
+			let attemptsInfo = row.find('.tacenter').text().split("/");
+			let attemptsLeft = parseInt(attemptsInfo[0].trim());
+			let attemptsTotal = parseInt(attemptsInfo[1].trim());
+
+			console.log(`${attemptsLeft} and ${attemptsTotal}`);
+			if(attemptsLeft < attemptsTotal) {
+				row.find('.row-title').addClass('played_competition');
+				row.find('.action').prev('td').addClass('played_competition').text('Played');
+			}
+		}
+
+
 		if(!target.hasClass('btn-pause') && !target.hasClass('btn-join')) {
 			let competitionId = target.data('cmpid');
 			target.parent().append(`<button class="btn btn-secondary btn-pause" data-cmpid="${competitionId}" type="button">❚❚</button>`)
@@ -185,14 +199,14 @@ function addLoadedPausedCompetitionRows(savedCompetitions) {
 		//Fix issue with duplicated rows, which marked as active.. (even they are paused)
 		let enrolledList = $('#enrolled-competitions-region .competitions-table-rows tr .action .btn-leave');
 
-			savedCompetitions.forEach(rowData => {
-				// Only Paused will be adjusted/fixed
-				if(rowData.paused) {
-					console.log(`Now adding paused row`, rowData);
+			savedCompetitions.forEach(savedCompetition => {
+				// Only Paused and not Finished will be adjusted/fixed
+				if(savedCompetition.paused && !savedCompetition.finished) {
+					console.log(`Now adding paused and not finished row`, savedCompetition);
 
 					enrolledList.each(function() {
 						let id = $(this).data('cmpid');
-						if(id === rowData.id) {
+						if(id === savedCompetition.id) {
 							console.log(`Paused and Active bug fix for`, id);
 							$(this).closest('tr').remove();
 							let counterTitle = $('#enrolled-competitions-region h4 span');
@@ -203,39 +217,45 @@ function addLoadedPausedCompetitionRows(savedCompetitions) {
 
 					let htmlTags = ``;
 
-					// console.log(`Data which will be loaded as pause`, rowData);
+					// console.log(`Data which will be loaded as pause`, savedCompetition);
 
-					rowData.tags.forEach(tag => {
+					savedCompetition.tags.forEach(tag => {
 						htmlTags += `<span class="species-tag">${tag}</span>`;
 					});
 
-					//<button class="btn btn-secondary btn-pause active" data-cmpid="${rowData.id}" type="button">❚❚</button>
+					//<button class="btn btn-secondary btn-pause active" data-cmpid="${savedCompetition.id}" type="button">❚❚</button>
 					let template =
 						`<tr>
 						<td class="row-icon comp-image-container">
-							<div class="${rowData.icons}"></div>
+							<div class="${savedCompetition.icons}"></div>
 						</td>
 						<td class="row-title animal_item first paused_competition">
-							<a href="#competitions/details/${rowData.id}">${rowData.title}</a>
+							<a href="#competitions/details/${savedCompetition.id}">${savedCompetition.title}</a>
 							<div class="tags">
 								${htmlTags}
 							</div>
 						</td>
-						<td class="row-players data_item tacenter">${rowData.attemptsLeft} / ${rowData.attemptsTotal}</td>
-						<td class="row-starts data_item">${rowData.position}</td>
-						<td class="row-starts data_item">${rowData.starts}</td>
-						<td class="row-starts data_item">${rowData.ends}</td>
+						<td class="row-players data_item tacenter">${savedCompetition.attemptsLeft} / ${savedCompetition.attemptsTotal}</td>
+						<td class="row-starts data_item">${savedCompetition.position}</td>
+						<td class="row-starts data_item">${savedCompetition.starts}</td>
+						<td class="row-starts data_item">${savedCompetition.ends}</td>
 						<td class="row-status data_item paused_competition">Paused</td>
 						<td class="row-action data_item action">
-							<button class="btn btn-primary btn-join btn-paused" data-cmpid="${rowData.id}" type="button">Activate</button>
-							<button class="btn btn-secondary btn-leave btn-paused" data-cmpid="${rowData.id}" type="button">X</button>
+							<button class="btn btn-primary btn-join btn-paused" data-cmpid="${savedCompetition.id}" type="button">Activate</button>
+							<button class="btn btn-secondary btn-leave btn-paused" data-cmpid="${savedCompetition.id}" type="button">X</button>
 						</td>
 					</tr>`;
 
-					$('#enrolled-competitions-region .competitions-table-rows').prepend(template);
+					checkPageLoaded(function() {
+						$('#enrolled-competitions-region .competitions-table-rows').prepend(template);
+					})
+
 				}
 			});
 	}
+
+	// Pass savedData
+	return savedCompetitions;
 }
 
 async function deactivateCompetition(id) {

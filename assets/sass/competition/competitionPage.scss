@@ -56,6 +56,10 @@
 }
 
 // HISTORY
+#enrolled-competitions-region .competitions-table-rows .played_competition a,
+#enrolled-competitions-region .competitions-table-rows .played_competition {
+  color: #4c9e20 !important;
+}
 #enrolled-competitions-region .competitions-table-rows .action {
   min-width: 115px;
 }
@@ -213,9 +217,6 @@
   transition: color .2s linear, background .2s linear;
 }
 
-
-// ZYMETI LISTE KURIE PAUSED AR ENROLLED KAI SWITCHINA GYVUNA
-
-//#competitions-filter-region {
-//  display: none;
-//}
+#competitions-list-region .save_competitions-table-rows .played_competition {
+  color: #4c9e20 !important;
+}

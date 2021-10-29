@@ -8,8 +8,7 @@ export function activateCompetitionSave() {
 	$('#competitions-tab-region ul').append(historyMenu);
 }
 
-export function deleteSavedCompetition(competitionId) {
-	console.log(`Called delete saved competition..`);
+export function deleteSavedCompetition(competitionId, action) {
 	chrome.storage.local.get('savedCompetitions', data => {
 
 		// If competitionID not equals stored IDs leave them in Array.
@@ -29,9 +28,11 @@ export function deleteSavedCompetition(competitionId) {
 			console.log(`Deleted Local Saved Competition: ${competitionId}`);
 			checkLocalStorage();
 
-			checkElementLoaded('#competitions-list-region .competitions-table-rows', function () {
-				updateEnrolledCompetitions();
-			});
+			if(action === 'leaveCompetition') {
+				checkElementLoaded('#competitions-list-region .competitions-table-rows', function () {
+					updateEnrolledCompetitions();
+				});
+			}
 		})
 	});
 }
@@ -145,12 +146,6 @@ export function waitForElementUpdate(existingLength, requiredElement, callback) 
 			clearInterval(intervalChecker);
 			callback();
 		}
-/*		else {
-			if (existingLength > totalLength) {
-				clearInterval(intervalChecker);
-				callback();
-			}
-		}*/
 
 	}, 100);
 }
