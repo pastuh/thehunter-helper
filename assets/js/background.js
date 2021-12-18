@@ -135,7 +135,11 @@ function checkOnMessage(expression, request, selectedTab) {
 
 // If website is active and user open next..
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, updatedTab) {
-    console.log(`On Updated..`);
+
+    if (changeInfo.status == 'complete') {
+        checkOnUpdated(`.`, 'hideUnnecessary', tabId, changeInfo);
+    }
+
     // Activate Main buttons
     checkOnUpdated(`.`, 'addInfoButtons', tabId, changeInfo);
     // Score..

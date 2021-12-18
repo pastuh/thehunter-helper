@@ -97,6 +97,15 @@
   color: #E7BE3D;
 }
 
+.taxidermize-timer {
+  display: none !important;
+}
+
+.btn-taxidermize {
+  margin-top: 3px !important;
+  padding: 3px !important;
+}
+
 .hunterHelperTable.tabulator .tabulator-tableHolder {
   box-shadow: #373635 -2px 4px 2px;
 }
@@ -229,6 +238,7 @@
 .hunterHelperTable.tabulator .tabulator-tableHolder .tabulator-table .tabulator-row.tabulator-calcs.tabulator-calcs-bottom {
   background: #111 !important;
   color: #555;
+  border-top: 2px solid #222;
 }
 
 .hunterHelperTable.tabulator .tabulator-row.tabulator-group {

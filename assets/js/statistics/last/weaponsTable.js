@@ -11,8 +11,9 @@ import {
     weaponStatsFormatter,
     zeroCountColor,
 } from './helpers';
+import {getSlowUnitOptions} from "./optionsPage";
 
-export function styleWeaponsTable() {
+export async function styleWeaponsTable() {
     let originalWeaponsTable = $('.weapon_stats.table');
     if (originalWeaponsTable.length) {
         let tabledata = [];
@@ -160,7 +161,7 @@ export function styleWeaponsTable() {
                 {
                     title: 'Accuracy (%)',
                     field: 'accuracy_data',
-                    width: 100,
+                    minWidth: 120,
                     sorter: 'number',
                     headerTooltip: 'Hit Accuracy (%)',
                     bottomCalc: countRowAverage,
@@ -182,7 +183,7 @@ export function styleWeaponsTable() {
                 {
                     title: 'Kills per hit (%)',
                     field: 'kills_hit_data',
-                    width: 111,
+                    width: 110,
                     sorter: 'number',
                     bottomCalc: countRowAverage,
                     bottomCalcFormatter: hideZeroCount,
@@ -192,6 +193,7 @@ export function styleWeaponsTable() {
                 {
                     title: 'Longest shot (m)',
                     field: 'distance_meters',
+                    maxWidth: 110,
                     sorter: 'number',
                     bottomCalc: countRowAverage,
                     bottomCalcFormatter: hideZeroCount,
@@ -201,6 +203,7 @@ export function styleWeaponsTable() {
                 {
                     title: 'Longest shot (ft)',
                     field: 'distance_feets',
+                    maxWidth: 110,
                     sorter: 'number',
                     bottomCalc: countRowAverage,
                     bottomCalcFormatter: hideZeroCount,
@@ -210,5 +213,11 @@ export function styleWeaponsTable() {
                 },
             ],
         });
+
+        if (await getSlowUnitOptions()) {
+            console.log(`Adjusting weapons table distance..`);
+            table.hideColumn("distance_meters");
+            table.showColumn("distance_feets")
+        }
     }
 }

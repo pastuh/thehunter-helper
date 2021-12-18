@@ -1,13 +1,15 @@
 .store-info-text {
+  margin-top: 4px;
   background-color: #1d1d1d;
   color: #BBB;
-  border-radius: 10px;
-  padding: 1px 7px;
-  position: absolute;
+  border-radius: 0;
+  padding: 2px 22px;
+  position: inherit;
   font-size: 14px;
   top: 10px;
   right: 0;
   height: 50px;
+  clear: both;
 }
 
 .ownfull {

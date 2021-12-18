@@ -7,7 +7,7 @@ import {
     checkPageLoaded,
     addSeasonInfo,
     addUpArrow,
-    checkElementLoaded,
+    checkElementLoaded, addSidebarBlock,
 } from './utilities/extension/helpers';
 
 import { activateStatsLastTables } from './statistics/last/sorterContentPage';
@@ -22,9 +22,13 @@ import { activateMissions } from './mission/missionPage';
 import { autoReadMessages, setMessageStatus } from './message/messagePage';
 import { fixScoresheetImage } from './scoresheet/scoresheetPage';
 import {
+    activateAmmoCalculator,
     addOwnedInteractionCheckbox,
-    checkHideOwnedItems,
+    checkHideOwnedItems, setCounterText,
 } from './shop/owned/ownedPage';
+import {
+    addUnitConvertionOptionCheckbox, checkUnitConvertionOptions
+} from "./statistics/last/optionsPage";
 import { calculateBundle } from './shop/bundles/bundlesPage';
 import { showSalePrice } from './shop/price';
 
@@ -36,6 +40,13 @@ chrome.runtime.sendMessage({
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.todo === 'checkTabButtons') {
+        showInfoButtons();
+    }
+    if(request.todo === 'hideUnnecessary') {
+        console.log(`slepiu random teksta..`);
+        setCounterText($('#ownedItemsHidden'), ``);
+    }
     if (request.todo === 'styleStatsLifeTimeTables') {
         activateStatsLastTables();
     }
@@ -49,9 +60,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         storeServerCompetitionData();
         activateCompetitionStyle();
         activateCompetitionHistory();
-    }
-    if (request.todo === 'checkTabButtons') {
-        showInfoButtons();
     }
     if (request.todo === 'checkLodge') {
         addProfileLodges();
@@ -67,7 +75,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
     if (request.todo === 'checkShop') {
         checkElementLoaded('.store-list', function () {
-            addOwnedInteractionCheckbox();
+            activateAmmoCalculator();
             checkHideOwnedItems();
             showSalePrice();
             triggerShopSearch();
@@ -75,13 +83,24 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
 });
 
+console.log(`Nuolatos tikrinu funkcijas..`);
+
 function showInfoButtons() {
     checkPageLoaded(function () {
-        setHunterOptions();
-        addUpArrow();
         addSeasonInfo();
+        setHunterOptions();
+
         addInteractionBtn('btnFriends', 'Show In-game friends');
         addInteractionBtn('btnMessage', 'Read new messages');
+        addSidebarBlock('optionsBlock');
+
+        addOwnedInteractionCheckbox();
+        checkHideOwnedItems();
+
+        addUnitConvertionOptionCheckbox();
+        checkUnitConvertionOptions();
+
+        addUpArrow();
         setMessageStatus();
     });
 }

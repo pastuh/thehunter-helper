@@ -28,6 +28,27 @@
   background-color: #191919;
 }
 
+.lodge-adjust {
+  overflow: auto;
+  width: 400px !important;
+  height: 142px;
+}
+
+.lodge-medium {
+  height: 48px;
+  width: 48px;
+}
+
+.lodge-large {
+  height: 32px;
+  width: 32px;
+}
+
+.lodge-huge {
+  height: 26px;
+  width: 26px;
+}
+
 .trophy-image {
   float: left;
   height: 220px;
@@ -60,12 +81,14 @@
   filter: alpha(opacity=80) !important;
   display: none;
   z-index: 9999;
+  cursor: pointer;
 }
 
 #trophy-overlayContent {
   position: fixed;
   width: 100%;
-  top: 100px;
+  height: 100%;
+  top: 0;
   text-align: center;
   display: none;
   overflow: hidden;
@@ -73,15 +96,41 @@
 }
 
 #trophy-imgBig {
-  max-height: 60%;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  position: relative;
+  max-height: 90%;
+  top: 30px;
+  left: auto;
+  margin: 0 auto;
   cursor: pointer;
 }
 
+.screen-info {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.5);;
+}
+
+.trophy-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: white;
+  text-transform: uppercase;
+  z-index: 1;
+  background: rgb(0 0 0 / 50%);
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.trophy-close:hover {
+  background: white;
+  color: #000;
+}
+
 .trophy-text {
+  position: relative;
   background-color: #111;
 }
 
@@ -96,6 +145,10 @@
   color: #aaaaaa;
   width: 100%;
   display: block;
+}
+
+.trophy-loader-zone {
+  text-align: center;
 }
 
 .trophy-loader {

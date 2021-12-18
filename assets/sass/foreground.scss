@@ -49,7 +49,8 @@
 }
 
 #btnFriends,
-#btnMessage {
+#btnMessage,
+#optionsBlock .slider {
   display: flex;
   margin: 5px 10px;
   color: white;
@@ -87,6 +88,45 @@
 
 #sidebar .promo-component .promo-action .btn {
   float: none;
+}
+
+// ---------------- OPTIONS BLOCK --------------
+#optionsBlock {
+  position: relative;
+  display: block;
+  height: auto;
+  margin-top: 20px;
+  padding-top: 10px;
+}
+
+#optionsBlock .slider-info {
+  display: none;
+}
+
+#optionsBlock.down .slider-info {
+  display: block;
+}
+
+#optionsBlock .slider {
+  cursor: pointer;
+  background: #5a5a5a;
+}
+
+#optionsBlock.down .slider:before{
+  content: "\25BC";
+  right: 0;
+  position: absolute;
+  margin-right: 20px;
+}
+#optionsBlock .slider:before{
+  content: "\25B2";
+  right: 0;
+  position: absolute;
+  margin-right: 20px;
+}
+
+.slide-down {
+  padding-top: 10px;
 }
 
 // ---------------- CHECKBOX ON/OFF ----------------
@@ -139,18 +179,34 @@
 }
 
 .onoffswitch-inner:before {
-  content: "ON";
   padding-left: 10px;
-  background-color: #3b9e20;
+  background-color: #75a05f;
   color: #FFFFFF;
 }
 
 .onoffswitch-inner:after {
-  content: "OFF";
   padding-right: 10px;
-  background-color: #E72D06;
+  background-color: brown;
   color: #FFFFFF;
   text-align: right;
+}
+
+.option-owned .onoffswitch-inner:before {
+  content: "YES";
+}
+
+.option-owned .onoffswitch-inner:after {
+  content: "NO";
+}
+
+.option-units .onoffswitch-inner:before {
+  content: "Lbs";
+  background-color: #161616;
+}
+
+.option-units .onoffswitch-inner:after {
+  content: "Kg";
+  background-color: #161616;
 }
 
 .onoffswitch-switch {
@@ -181,6 +237,7 @@
   float: right;
   top: -24px;
   position: relative;
+  height: 10px;
 }
 
 // ------------- HELP TIP -----------------

@@ -1,4 +1,5 @@
 import { checkElementLoaded } from '../utilities/extension/helpers';
+import {setCompetitionAnimalImage} from "../competition/competitionPage";
 
 export function activateMissions() {
     checkElementLoaded('#page-missions', function () {
@@ -42,7 +43,7 @@ async function styleOverviewInfo() {
 
         // Available mission Title
         let currentMissionTitle = availableMissionRow.text().trim();
-        availableMissionRow.html('<i class="icon-angle-down"></i>');
+        // availableMissionRow.html('<i class="icon-angle-down"></i>');
 
         // Get main Mission name and clear old info
         let missionTitle = overviewRaw.ignore('div').text().trim();
@@ -103,10 +104,14 @@ async function styleOverviewInfo() {
             );
 
         // Left info Overview
+        let animalSrc = setCompetitionAnimalImage(animalName.trim());
+        animalSrc = `https://static.thehunter.com/static/img/statistics/${animalSrc}.png`;
+
         overviewRaw.append(`
                 <div class="mission-info-data">
                     <span class="mission-objective-counter">${overviewCompleted} / ${overviewTotal}</span>
                     <i class="state-icon icon-caret-right"></i>
+                    <img class="helperAnimalImage" src="${animalSrc}" style="display: inline-block;" onerror="if (this.src != 'https://static.thehunter.com/static/img/items/256/hunting_horn_01.png') this.src = 'https://static.thehunter.com/static/img/items/256/hunting_horn_01.png';">
                     <span class="mission-animal-name ${
                         overviewCompleted > 0 &&
                         overviewCompleted < overviewTotal
@@ -141,9 +146,9 @@ async function styleOverviewInfo() {
                 </div>
                 `);
 
-        // Change available Mission position
-        let newMissionPosition = availableMission.parent().detach();
-        overviewRaw.after(newMissionPosition);
+        // Change available Mission colors
+        availableMission.find('div').first().css({ 'background' : '#4c9e20'});
+        availableMission.find('.mission-details').css({ 'background' : '#111'});
 
         // Remove arrow icon
         $(this).find('.state-icon-container:first').remove();

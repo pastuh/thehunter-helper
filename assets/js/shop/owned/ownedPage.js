@@ -1,31 +1,27 @@
-import { checkElementLoaded } from '../../utilities/extension/helpers';
+import {addOptionsCheckbox, checkElementLoaded} from '../../utilities/extension/helpers';
 import { showMissingAmmo } from '../ammo/ammoPage';
 
-export function addOwnedInteractionCheckbox() {
-    if (!$('.store-info-text').length) {
-        $('.page-title').after(
-            `<div class="store-info-text">
-                <div>"Hide owned items" 
-                    <div class="help-tip"><p>Already purchased items will be hidden.<br> (If at least 1 quantity exist)</p></div>
-                </div>
-                <div class="onoffswitch">
-                    <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="ownedItemsHidden" tabindex="0">
-                    <label class="onoffswitch-label" for="ownedItemsHidden">
-                        <span class="onoffswitch-inner"></span>
-                        <span class="onoffswitch-switch"></span>
-                    </label>
-                </div>
-                <span class="switchCounter"></span>
-            </div>`
-        );
+export function activateAmmoCalculator() {
+    if(!$('.single-functions-activator').length) {
+        console.log(`Single functions activator..`);
 
-        $('#ownedItemsHidden').on('change', function (e) {
-            hideOwnedItems(e);
-        });
+        $('.page-title').after(`<div class="single-functions-activator"></div>`);
+
         $('#store-sidebar').on('click', function (e) {
             showMissingAmmo(e);
         });
     }
+}
+
+export function addOwnedInteractionCheckbox() {
+    console.log(`Adding ownedz block..`);
+    let description = `<p>Already purchased items in store will be hidden.<br> (If at least 1 quantity exist)</p>`;
+
+    addOptionsCheckbox('ownedItemsHidden', 'option-owned', 'Hide owned items', description, true);
+
+    $('#ownedItemsHidden').on('change', function (e) {
+        hideOwnedItems(e);
+    });
 }
 
 export function checkHideOwnedItems() {
@@ -36,6 +32,7 @@ export function checkHideOwnedItems() {
                 return result;
             })
             .then((data) => {
+                console.log(`owned info..`, data);
                 // Not for bundle
                 if ($('#store-sidebar .cat50.selected').length === 0) {
                     setOwnedItemsVisibility(data);
@@ -130,15 +127,17 @@ function setOwnedItemsVisibility(needHideItem) {
             }
         });
 
-        setCounterText(
-            $('#ownedItemsHidden'),
-            `${hiddenCounter}/${totalCounter}`
-        );
+        if(hiddenCounter !== 0 && totalCounter !== 0) {
+            setCounterText(
+              $('#ownedItemsHidden'),
+              `${hiddenCounter}/${totalCounter}`
+            );
+        }
     } else {
         setCounterText($('#ownedItemsHidden'), ``);
     }
 }
 
-function setCounterText(element, value) {
+export function setCounterText(element, value) {
     element.closest('.store-info-text').find('.switchCounter').text(value);
 }

@@ -12,7 +12,8 @@ export function setHunterOptions() {
 		});
 		chrome.storage.local.clear(); // callback is optional*/
 
-    let defaultValue = true;
+    // ----- DEFAULT VALUES FOR NEW EXTENSION USER
+    let defaultValue = false;
     chrome.storage.local.get(
         { ownedItemsIsHidden: defaultValue },
         function (data) {
@@ -24,6 +25,18 @@ export function setHunterOptions() {
                 }
             );
         }
+    );
+    // ----- DEFAULT VALUES FOR NEW EXTENSION USER
+    chrome.storage.local.get(
+      { hunterStatsInternational: defaultValue },
+      function (data) {
+          chrome.storage.local.set(
+            { hunterStatsInternational: data.hunterStatsInternational },
+            function () {
+            //
+            }
+          );
+      }
     );
 
     // List all storage
@@ -97,6 +110,16 @@ export function addSeasonInfo() {
     }
 }
 
+// Add dynamic block to sidebar
+export function addSidebarBlock(btnId) {
+    if (!$(`#${btnId}`).length) {
+        let targetLoc = $('#sidebar');
+        targetLoc
+          .last()
+          .append(`<div id="${btnId}" class="section"><span class="slider btn">Extension settings</span><div class="slider-info"></div></div>`);
+    }
+}
+
 // Add dynamic buttons to sidebar
 export function addInteractionBtn(btnId, btnName) {
     if (!$(`#${btnId}`).length) {
@@ -112,4 +135,33 @@ export function initAuth() {
         /\"access_token\":\"(\w+)\"/
     );
     return auth_id[1];
+}
+
+export function addOptionsCheckbox(btnId, btnMainClass, btnName, btnDescr, counter) {
+    console.log($(`#optionsBlock`).length);
+    if (!$(`#${btnId}`).length) {
+
+        let counterTemplate = '';
+        if(counter) {
+            counterTemplate = `<span class="switchCounter"></span>`;
+        }
+        let template = `<div class="store-info-text ${btnMainClass}">
+                <div>"${btnName}" 
+                    <div class="help-tip">${btnDescr}</div>
+                </div>
+                <div class="onoffswitch">
+                    <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="${btnId}" tabindex="0">
+                    <label class="onoffswitch-label" for="${btnId}">
+                        <span class="onoffswitch-inner"></span>
+                        <span class="onoffswitch-switch"></span>
+                    </label>
+                </div>
+                ${counterTemplate}
+            </div>`;
+
+        let targetLoc = $('#optionsBlock .slider-info');
+        targetLoc
+          .last()
+          .append(template);
+    }
 }

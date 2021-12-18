@@ -10,11 +10,15 @@ import {
     hideZeroCount,
     scoreStatsFormatter,
     setStatisticsWeaponImage,
+    taxidermizeFormatter,
     weaponStatsDiagramFormatter,
     zeroCountColor,
 } from './helpers';
+import {getSlowUnitOptions} from "./optionsPage";
 
-export function styleConfirmedKillsTable() {
+export async function styleConfirmedKillsTable() {
+    let taxidermyAvailable = false;
+
     let originalConfirmedKillsTable = $('.confirmed-kills div').first();
     if (originalConfirmedKillsTable.length) {
         let tabledata = [];
@@ -30,6 +34,7 @@ export function styleConfirmedKillsTable() {
 
         originalConfirmedKillsData.each(function (index, element) {
             let animalSrc = $(element).find('.harvest_image img').attr('src');
+            let animalTax = $(element).find('.harvest_image div').first();
 
             let animalTitleInfo = $(element).find('th .species').text().trim();
             let animalTitle;
@@ -150,7 +155,7 @@ export function styleConfirmedKillsTable() {
                 });
             }
 
-            tabledata.push({
+            let specificTable_main = {
                 id: index,
                 animal_gender: animalGender,
                 animal_title: animalTitle,
@@ -161,20 +166,170 @@ export function styleConfirmedKillsTable() {
                 animal_link: animalLink,
                 animal_diagram: animalDiagram,
                 animal_value: animalValue,
-                animal_weightKg: weightKg,
                 animal_weightLb: weightLb,
+                animal_weightKg: weightKg,
                 shots_hit: shotsHit,
                 weapon_used: weaponTitle,
                 weapon_src: weaponSrc,
                 distance_meters: distanceMeters,
                 distance_feets: distanceFeets,
                 harvest_time: harvestTime,
-            });
+            };
+
+            // If exist Taxidermy button, add column to table
+            let specificTable_taxidermy;
+            if(animalTax.length) {
+                taxidermyAvailable = true;
+                specificTable_taxidermy = {
+                    animal_taxidermize: animalTax,
+                };
+            }
+
+            tabledata.push({...specificTable_main, ...specificTable_taxidermy});
+
         });
 
         originalConfirmedKillsTable.slideUp('normal', function () {
             $(this).remove();
         });
+
+        let tableColumn = [];
+
+        tableColumn.push(
+            {
+                title: 'Species',
+                field: 'image',
+                maxWidth: 60,
+                sorter: 'string',
+                hozAlign: 'center',
+                headerTooltip: true,
+                headerMenu: headerStatsMenu,
+                formatter: animalStatsImageFormatter2,
+                bottomCalc: countRows,
+                bottomCalcFormatter: hideZeroCount,
+                cssClass: 'hunterHelperTableImage',
+            },
+            {
+                title: 'Gender',
+                field: 'animal_gender',
+                width: 55,
+                sorter: 'string',
+            },
+            {
+                title: 'Score',
+                field: 'animal_score',
+                width: 70,
+                sorter: 'number',
+                bottomCalc: countRowAverage,
+                bottomCalcFormatter: hideZeroCount,
+                formatter: scoreStatsFormatter,
+                headerSortStartingDir: 'desc',
+            },
+            {
+                title: 'Scoring system',
+                field: 'animal_scoreSys',
+                sorter: 'string',
+                headerSortStartingDir: 'desc',
+                visible: false,
+            },
+            {
+                title: 'Value',
+                field: 'animal_value',
+                width: 70,
+                sorter: 'number',
+                headerTooltip: 'Harvest value',
+                bottomCalc: countRowAverage,
+                bottomCalcFormatter: hideZeroCount,
+                formatter: zeroCountColor,
+                headerSortStartingDir: 'desc',
+            },
+            {
+                title: 'Weight (lbs)',
+                field: 'animal_weightLb',
+                width: 100,
+                sorter: 'number',
+                headerTooltip: 'Animal weight (lbs)',
+                bottomCalc: countRowAverage,
+                bottomCalcFormatter: hideZeroCount,
+                formatter: zeroCountColor,
+                headerSortStartingDir: 'desc',
+                visible: false
+            },
+            {
+                title: 'Weight (kg)',
+                field: 'animal_weightKg',
+                width: 100,
+                sorter: 'number',
+                headerTooltip: 'Animal weight (kg)',
+                bottomCalc: countRowAverage,
+                bottomCalcFormatter: hideZeroCount,
+                formatter: zeroCountColor,
+                headerSortStartingDir: 'desc',
+            },
+            {
+                title: 'Shots hit',
+                field: 'shots_hit',
+                width: 70,
+                sorter: 'number',
+                bottomCalc: countRowValue,
+                bottomCalcFormatter: hideZeroCount,
+                headerSortStartingDir: 'desc',
+            },
+            {
+                title: 'Weapon',
+                field: 'weapon_used',
+                minWidth: 154,
+                variableHeight: true,
+                sorter: 'string',
+                headerTooltip: 'Weapon used',
+                headerMenu: headerStatsMenu,
+                formatter: weaponStatsDiagramFormatter,
+                headerFilter: true,
+                headerFilterPlaceholder: 'Filter..',
+                cssClass: 'hunterHelperDiagram',
+            },
+            {
+                title: 'Shot distance (ft)',
+                field: 'distance_feets',
+                minWidth: 120,
+                sorter: 'number',
+                bottomCalc: countRowAverage,
+                bottomCalcFormatter: hideZeroCount,
+                formatter: zeroCountColor,
+                headerSortStartingDir: 'desc',
+                visible: false
+            },
+            {
+                title: 'Shot distance (m)',
+                field: 'distance_meters',
+                minWidth: 120,
+                sorter: 'number',
+                bottomCalc: countRowAverage,
+                bottomCalcFormatter: hideZeroCount,
+                formatter: zeroCountColor,
+                headerSortStartingDir: 'desc',
+                },
+            {
+                title: 'Time of Harvest',
+                field: 'harvest_time',
+                sorter: 'string',
+                tooltip: true,
+                headerSortStartingDir: 'desc',
+                visible: false,
+            }
+        );
+
+        if(taxidermyAvailable) {
+            tableColumn.push(
+              {
+                  title: 'Taxidermize',
+                  field: 'animal_taxidermize',
+                  formatter: taxidermizeFormatter,
+                  width: 90,
+                  visible: false,
+              }
+            );
+        }
 
         let table = new Tabulator('#confirmed-stats-table', {
             height: '100%',
@@ -199,127 +354,18 @@ export function styleConfirmedKillsTable() {
             tooltips: false,
             placeholder: 'No Data Found',
             initialSort: [{ column: 'animal_score', dir: 'desc' }],
-            columns: [
-                {
-                    title: 'Species',
-                    field: 'image',
-                    maxWidth: 60,
-                    sorter: 'string',
-                    hozAlign: 'center',
-                    headerTooltip: true,
-                    headerMenu: headerStatsMenu,
-                    formatter: animalStatsImageFormatter2,
-                    bottomCalc: countRows,
-                    bottomCalcFormatter: hideZeroCount,
-                    cssClass: 'hunterHelperTableImage',
-                },
-                {
-                    title: 'Gender',
-                    field: 'animal_gender',
-                    width: 55,
-                    sorter: 'string',
-                },
-                {
-                    title: 'Score',
-                    field: 'animal_score',
-                    width: 70,
-                    sorter: 'number',
-                    bottomCalc: countRowAverage,
-                    bottomCalcFormatter: hideZeroCount,
-                    formatter: scoreStatsFormatter,
-                    headerSortStartingDir: 'desc',
-                },
-                {
-                    title: 'Scoring system',
-                    field: 'animal_scoreSys',
-                    sorter: 'string',
-                    headerSortStartingDir: 'desc',
-                    visible: false,
-                },
-                {
-                    title: 'Value',
-                    field: 'animal_value',
-                    width: 70,
-                    sorter: 'number',
-                    headerTooltip: 'Harvest value',
-                    bottomCalc: countRowAverage,
-                    bottomCalcFormatter: hideZeroCount,
-                    formatter: zeroCountColor,
-                    headerSortStartingDir: 'desc',
-                },
-                {
-                    title: 'Weight (kg)',
-                    field: 'animal_weightKg',
-                    width: 70,
-                    sorter: 'number',
-                    headerTooltip: 'Animal weight (kg)',
-                    bottomCalc: countRowAverage,
-                    bottomCalcFormatter: hideZeroCount,
-                    formatter: zeroCountColor,
-                    headerSortStartingDir: 'desc',
-                },
-                {
-                    title: 'Weight (lbs)',
-                    field: 'animal_weightLb',
-                    width: 70,
-                    sorter: 'number',
-                    headerTooltip: 'Animal weight (lbs)',
-                    bottomCalc: countRowAverage,
-                    bottomCalcFormatter: hideZeroCount,
-                    formatter: zeroCountColor,
-                    headerSortStartingDir: 'desc',
-                    visible: false,
-                },
-                {
-                    title: 'Shots hit',
-                    field: 'shots_hit',
-                    width: 70,
-                    sorter: 'number',
-                    bottomCalc: countRowValue,
-                    bottomCalcFormatter: hideZeroCount,
-                    headerSortStartingDir: 'desc',
-                },
-                {
-                    title: 'Weapon',
-                    field: 'weapon_used',
-                    minWidth: 154,
-                    variableHeight: true,
-                    sorter: 'string',
-                    headerTooltip: 'Weapon used',
-                    headerMenu: headerStatsMenu,
-                    formatter: weaponStatsDiagramFormatter,
-                    headerFilter: true,
-                    headerFilterPlaceholder: 'Filter..',
-                    cssClass: 'hunterHelperDiagram',
-                },
-                {
-                    title: 'Shot distance (m)',
-                    field: 'distance_meters',
-                    sorter: 'number',
-                    bottomCalc: countRowAverage,
-                    bottomCalcFormatter: hideZeroCount,
-                    formatter: zeroCountColor,
-                    headerSortStartingDir: 'desc',
-                },
-                {
-                    title: 'Shot distance (ft)',
-                    field: 'distance_feets',
-                    sorter: 'number',
-                    bottomCalc: countRowAverage,
-                    bottomCalcFormatter: hideZeroCount,
-                    formatter: zeroCountColor,
-                    visible: false,
-                    headerSortStartingDir: 'desc',
-                },
-                {
-                    title: 'Time of Harvest',
-                    field: 'harvest_time',
-                    sorter: 'string',
-                    tooltip: true,
-                    headerSortStartingDir: 'desc',
-                    visible: false,
-                },
-            ],
+            columns: tableColumn,
         });
+
+        if (await getSlowUnitOptions()) {
+            console.log(`Adjusting weight..`);
+            table.hideColumn("animal_weightKg");
+            table.showColumn("animal_weightLb")
+
+            console.log(`Adjusting distance..`);
+            table.hideColumn("distance_meters");
+            table.showColumn("distance_feets")
+        }
+
     }
 }

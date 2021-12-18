@@ -29,7 +29,7 @@ export function adjustNotBuyable(element) {
 
             // IF exist not purchasable items
             if (button.hasClass('disabled') && itemWithQuantity.length < 1) {
-                console.log(`not allowed to purchase..`);
+                // console.log(`not allowed to purchase..`);
                 button.text('Purchase is disabled');
                 button.attr('title', `Item Not buyable, disabled by game administrators`);
                 button.parent().find('.item-price-container').addClass('hide-price');

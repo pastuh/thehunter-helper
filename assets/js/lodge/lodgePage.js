@@ -101,15 +101,37 @@ async function showLodges(data) {
                     );
                     $('body').prepend(`<div id="trophy-overlay"></div>`);
                     $('body').prepend(
-                        `<div id="trophy-overlayContent"><img id="trophy-imgBig" src="" /><div class="trophy-text"></div></div>`
+                        `<div id="trophy-overlayContent">
+                            <div class="screen-info">
+                                <div class="trophy-close">X</div>
+                                <img id="trophy-imgBig" src="" />
+                                <div class="trophy-text"></div>
+                            </div>
+
+                        </div>`
                     );
                     if (typeof data !== 'undefined') {
+
+                        let lodgeSize = ''
+                        let lodgeSpace = '';
+                        if(data.length > 32) {
+                            lodgeSpace = 'lodge-adjust';
+                            lodgeSize = 'lodge-huge';
+                        } else if (data.length > 26) {
+                            lodgeSpace = 'lodge-adjust';
+                            lodgeSize = 'lodge-large';
+                        } else if (data.length > 16) {
+                            lodgeSize = 'lodge-medium';
+                        }
+
+                        $('#lodge-section').addClass(lodgeSpace);
+
                         data.forEach((lodgeData) => {
                             for (let i = 0; i < lodgeList.length; i++) {
                                 if (lodgeData.lodgeType === lodgeList[i].id) {
                                     //Add links to trophies with image
                                     $('#lodge-section').prepend(
-                                        `<img class="lodge-image lodge-${lodgeData.lodgeId}" src='${lodgeList[i].url}' title="${lodgeData.lodgeName}"/>`
+                                        `<img class="lodge-image lodge-${lodgeData.lodgeId} ${lodgeSize}" src='${lodgeList[i].url}' title="${lodgeData.lodgeName}"/>`
                                     );
                                     // Allow to click on each lodge and preview trophies
                                     $(`.lodge-${lodgeData.lodgeId}`).on(
@@ -171,7 +193,7 @@ async function listTrophiesIds(data) {
 async function getTrophiesData(ids) {
     if (ids.length) {
         let name = $('#profile-header .handle .user-name')[0].innerText;
-        $('#profile_content').append('<div class="trophy-loader"></div>');
+        $('#profile_content').append('<div class="trophy-loader-zone"><div class="trophy-loader"></div><span>Loading.. (If loader stuck, try again)</span></div>');
 
         try {
             let data = await Promise.all(
@@ -195,7 +217,7 @@ async function getTrophiesData(ids) {
 
 async function listTrophiesPhoto(data) {
     if (typeof data !== 'undefined' && data.length) {
-        $('.trophy-loader').remove();
+        $('.trophy-loader-zone').remove();
 
         data.forEach((page) => {
             const regex = /https.*\\\/\w+\.jpg/gi;
@@ -244,7 +266,7 @@ async function listTrophiesPhoto(data) {
             }
         });
 
-        $('#trophy-imgBig').on('click', () => {
+        $('#trophy-imgBig,.trophy-close').on('click', () => {
             $('#trophy-imgBig').attr('src', '');
             $('#trophy-overlay').hide();
             $('#trophy-overlayContent').hide();

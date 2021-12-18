@@ -34,6 +34,17 @@ export let weaponStatsDiagramFormatter = function (row) {
     return `<div class="weaponBlock">${usedWeaponsList}</div>`;
 };
 
+export let taxidermizeFormatter = function (row) {
+    let data = row.getData();
+    let button = data.animal_taxidermize[0];
+
+    if(typeof button !== "undefined") {
+        return `<div>${button.innerHTML}</div>`;
+    } else {
+        return ``;
+    }
+};
+
 export let countRows = function (values) {
     return values.length;
 };

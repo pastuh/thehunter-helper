@@ -111,6 +111,17 @@ export function setCompetitionAnimalImage(title) {
         );
         return animalTitle;
     }
+
+    if (animalTitle === 'duck') {
+        animalTitle = 'mallard';
+        return animalTitle;
+    }
+
+    if (animalTitle === 'ptarmigan') {
+        animalTitle = 'ptarmigan_willow';
+        return animalTitle;
+    }
+
     return animalTitle;
 }
 
