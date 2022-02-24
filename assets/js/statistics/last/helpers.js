@@ -36,12 +36,12 @@ export let weaponStatsDiagramFormatter = function (row) {
 
 export let taxidermizeFormatter = function (row) {
     let data = row.getData();
-    let button = data.animal_taxidermize[0];
 
-    if(typeof button !== "undefined") {
-        return `<div>${button.innerHTML}</div>`;
+    if(typeof data.animal_taxidermize !== 'undefined') {
+        let button = data.animal_taxidermize[0];
+        return `<div>${button.outerHTML}</div>`;
     } else {
-        return ``;
+        return `<div><button class="btn btn-primary btn-taxidermize disabled">Check lodge</button></div>`;
     }
 };
 

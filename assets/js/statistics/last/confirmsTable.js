@@ -34,7 +34,7 @@ export async function styleConfirmedKillsTable() {
 
         originalConfirmedKillsData.each(function (index, element) {
             let animalSrc = $(element).find('.harvest_image img').attr('src');
-            let animalTax = $(element).find('.harvest_image div').first();
+            let animalTax = $(element).find('.harvest_image div .btn-taxidermize').first();
 
             let animalTitleInfo = $(element).find('th .species').text().trim();
             let animalTitle;
