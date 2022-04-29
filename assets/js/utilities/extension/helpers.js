@@ -67,6 +67,17 @@ export function checkElementLoaded(element, callback) {
     }, 100);
 }
 
+export function checkElementDisappeared(element, callback) {
+    let intervalChecker = setInterval(() => {
+        let loadingElement = $(element);
+        if (!loadingElement.length) {
+            console.log(`elementas pranyko`);
+            clearInterval(intervalChecker);
+            callback();
+        }
+    }, 100);
+}
+
 
 export function checkLocalStorage() {
     chrome.storage.local.get(function (result) {

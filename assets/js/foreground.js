@@ -81,6 +81,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             triggerShopSearch();
         });
     }
+
+    sendResponse({status: 'ok'});
+    return true;
 });
 
 console.log(`Nuolatos tikrinu funkcijas..`);

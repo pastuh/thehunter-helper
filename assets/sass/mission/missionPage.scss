@@ -1,12 +1,183 @@
-#missions-available-headline,
-#missions-available,
-#missions-active-headline,
-#missions-active {
-  display: none;
+//#missions-available-headline,
+//#missions-available,
+//#missions-active-headline,
+//#missions-active {
+//  display: none;
+//}
+
+//#missions-overview h4 {
+//  display: none;
+//}
+
+#ajax_content #page-missions .mission-filters-form fieldset label {
+  width: initial;
 }
 
-#missions-overview h4 {
-  display: none;
+#ajax_content #mission-filters {
+  background: #333;
+}
+
+#mission-filters .mission-filters-form {
+  padding-top: 10px;
+}
+
+#page-missions .mission-section h4 {
+  font-size: 24px;
+}
+
+#mission-filters ul.multiselect-container .checkbox {
+  padding-left: 0;
+}
+
+#mission-filters ul.multiselect-container .checkbox input {
+  margin-right: 5px
+}
+
+#mission-filters ul.multiselect-container li>a {
+  cursor: default;
+  padding: 5px 0 1px 1px;
+}
+
+#mission-filters ul.multiselect-container li>a label {
+  cursor: pointer;
+  width: 100%;
+  display: block;
+}
+
+#mission-filters ul.multiselect-container li>a:hover label {
+  color: #000;
+}
+
+#mission-filters button.multiselect[title]:not([title="All selected"]) {
+  background-color: rgb(76, 158, 32);
+}
+
+#mission-filters .other-filters {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#mission-filters #mission-search {
+  margin-left: 16px;
+  width: 250px;
+}
+
+#mission-filters button.filterMissions {
+  width: 100px;
+  text-transform: uppercase;
+}
+
+#page-mission-links {
+  padding-bottom: 5px;
+}
+
+#page-mission-links .btn {
+  background: #e7be3d;
+}
+
+#page-mission-links .btn:hover {
+  background: #eee;
+}
+
+#page-missions #activate-all-block .activateAllAvailable {
+  width: 19%;
+}
+
+#page-missions #activate-all-block > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+
+#page-missions #activate-all-block fieldset {
+  width: 50%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+#page-missions .mission-section input[type='checkbox'] {
+  background-color: rgb(28, 28, 28);
+  color: rgb(231, 190, 61);
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgb(68, 68, 68);
+  border-image: initial;
+  border-radius: 0px;
+  width: 1.5em;
+  height: 1.5em;
+  margin: -4px 0px;
+
+  &:hover {
+    background-color: #000;
+  }
+}
+
+#page-missions .mission-section label[for='hide-completed'],
+#page-missions .mission-section label[for='mission_favourite_hide'] {
+  color: #999;
+  cursor: pointer;
+
+  &:hover {
+    color: rgb(231, 190, 61);
+  }
+}
+
+#page-missions .mission-section .headline-icon.icon-caret-down {
+  font-size: 24px;
+  margin: 5px 0 0 4px;
+  color: rgb(149, 211, 56);
+
+  &:hover {
+    color: darken(rgb(149, 211, 56), 20%)
+  }
+}
+
+#page-missions .mission-section .headline-icon.icon-caret-right {
+  font-size: 24px;
+  margin: 5px 0 0 4px;
+  color: rgb(249, 86, 13);
+
+  &:hover {
+    color: darken(rgb(249, 86, 13), 20%)
+  }
+}
+
+#mission-filters h4,
+#missions-favourites-headline,
+#missions-active-headline,
+#missions-available-headline,
+#missions-packs-headline {
+  color: white;
+  box-shadow: rgb(0 0 0 / 40%) -2px 4px 2px;
+  margin-bottom: 1px;
+  padding: 10px;
+  background: rgb(34, 34, 34);
+  border-top: 1px solid rgb(66, 64, 67);
+  border-left: 5px solid rgb(249, 86, 13);
+}
+
+#mission-filters h4 {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+#missions-active-headline {
+  margin-bottom: -1px;
+}
+
+.mission-section .mission-counter {
+  padding-top: 5px;
+}
+
+#ajax_content #page-missions .mission-section,
+#ajax_content #page-missions2 .mission-section {
+  border: 2px solid #202020;
+}
+
+#page-missions .icon-star.toggleFavourite,
+#page-missions2 .icon-star.toggleFavourite {
+  color: #f9560d;
 }
 
 #mission-completion #mission-completion {
@@ -36,8 +207,42 @@
   display: none !important;
 }
 
-#page-missions .set-container, #page-missions2 .set-container {
+#ajax_content #page-missions .set-container,
+#ajax_content #page-missions2 .set-container {
   background: transparent !important;
+  margin: 2px 0;
+}
+
+#ajax_content #page-missions #missions-active {
+  margin-top: 0;
+}
+
+#ajax_content #missions-active .active-mission-block .mission-container {
+  margin: 4px 0;
+  border: 0;
+  border-top: 1px solid #424043;
+}
+
+#ajax_content #missions-available .mission-container {
+  margin: 4px 0;
+  border: 0;
+  border-top: 1px solid #424043;
+}
+
+#ajax_content #missions-active .mission-row,
+#ajax_content #missions-available .mission-row {
+  padding: 2px !important;
+}
+
+#ajax_content #missions-active .mission-row:hover,
+#ajax_content #missions-available .mission-row:hover{
+  color: #F9560D;
+}
+
+#ajax_content #missions-active .mission-row .icon-paw-empty,
+#ajax_content #missions-available .mission-row .icon-unlock {
+  margin-top: 6px;
+  visibility: hidden;
 }
 
 .mission-row .icon-angle-down {
@@ -142,6 +347,11 @@
   background-color: #f9370d;
 }
 
+.mission-completed {
+  background-color: #4c9e20;
+  color: #fff;
+}
+
 .btn-primary.mission-animal-name {
   background: #3c3c3c;
 }
@@ -167,7 +377,7 @@
 }
 
 #page-missions .set-info, #page-missions2 .set-info {
-  padding: 9px 0 9px 9px !important;
+  padding: 2px !important;
 }
 
 #page-missions .set-info:hover {

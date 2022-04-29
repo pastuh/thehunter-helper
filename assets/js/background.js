@@ -1,6 +1,8 @@
 // NOTICE: EVENT js CAN highlight extension icon
 // Content -> EVENT (icon actions)
 // Activated based on tab actions
+let allowedUrl = 'https://www.thehunter.com';
+
 try {
     // Only for specific page
     let allowedUrl = 'https://www.thehunter.com';
@@ -66,13 +68,14 @@ try {
     console.log(`Main Error:`, e);
 }
 
-chrome.runtime.onMessage.addListener(function (request) {
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     //On request from Content: to show icon
     if (
         request.from === 'foreground' &&
         request.todo === 'checkUrlFunctions' &&
         request.subject === 'DOMInfo'
     ) {
+        console.log('Message from foreground');
         // Retrieve all tabs
         chrome.tabs.query(
             { active: true, currentWindow: true },
@@ -121,6 +124,8 @@ chrome.runtime.onMessage.addListener(function (request) {
                 );
             }
         );
+        sendResponse({status: 'ok'});
+        return true;
     }
 });
 
@@ -130,127 +135,141 @@ function checkOnMessage(expression, request, selectedTab) {
         chrome.tabs.sendMessage(selectedTab.id, {
             todo: request,
         });
+        return true;
     }
 }
 
 // If website is active and user open next..
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, updatedTab) {
+    console.log('website is really updated');
 
-    if (changeInfo.status == 'complete') {
-        checkOnUpdated(`.`, 'hideUnnecessary', tabId, changeInfo);
+    if(updatedTab.url.startsWith(allowedUrl)) {
+
+        if (changeInfo.status == 'complete') {
+            checkOnUpdated(`.`, 'hideUnnecessary', tabId, changeInfo);
+        }
+
+        //Score..
+        checkOnUpdated(
+          `\\/score\\/\\d+$`,
+          'checkTrophyImageFix',
+          tabId,
+          changeInfo
+        );
+        // Profile..
+        checkOnUpdated(`#profile\\/\\w+`, 'checkLodge', tabId, changeInfo);
+        // Store..
+        checkOnUpdated(`#store`, 'checkShop', tabId, changeInfo);
+        // Store Bundles..
+        checkOnUpdated(`#store\\/50`, 'showBundleDiscount', tabId, changeInfo);
+        // Missions..
+        checkOnUpdated(`#missions`, 'showMissions', tabId, changeInfo);
+        // Competitions..
+        checkOnUpdated(`#competitions`, 'styleCompetition', tabId, changeInfo);
+        // Expedition..
+        checkOnUpdated(
+          `\\/expedition\\/\\d+$`,
+          'styleStatsLastTables',
+          tabId,
+          changeInfo
+        );
+        checkOnUpdated(
+          `\\/statistics(\\/latest)?$`,
+          'styleStatsLastTables',
+          tabId,
+          changeInfo
+        );
+        checkOnUpdated(
+          `\\/statistics\\/lifetime$`,
+          'styleStatsLifeTimeTables',
+          tabId,
+          changeInfo
+        );
     }
 
-    // Activate Main buttons
-    checkOnUpdated(`.`, 'addInfoButtons', tabId, changeInfo);
-    // Score..
-    checkOnUpdated(
-        `\\/score\\/\\d+$`,
-        'checkTrophyImageFix',
-        tabId,
-        changeInfo
-    );
-    // Profile..
-    checkOnUpdated(`#profile\\/\\w+`, 'checkLodge', tabId, changeInfo);
-    // Store..
-    checkOnUpdated(`#store`, 'checkShop', tabId, changeInfo);
-    // Store Bundles..
-    checkOnUpdated(`#store\\/50`, 'showBundleDiscount', tabId, changeInfo);
-    // Missions..
-    checkOnUpdated(`#missions`, 'showMissions', tabId, changeInfo);
-    // Competitions..
-    checkOnUpdated(`#competitions`, 'styleCompetition', tabId, changeInfo);
-    // Expedition..
-    checkOnUpdated(
-        `\\/expedition\\/\\d+$`,
-        'styleStatsLastTables',
-        tabId,
-        changeInfo
-    );
-    checkOnUpdated(
-        `\\/statistics(\\/latest)?$`,
-        'styleStatsLastTables',
-        tabId,
-        changeInfo
-    );
-    checkOnUpdated(
-        `\\/statistics\\/lifetime$`,
-        'styleStatsLifeTimeTables',
-        tabId,
-        changeInfo
-    );
+
 });
 
 function checkOnUpdated(expression, request, tabId, changeInfo) {
-    //console.log(`onUpdated activated.. . ..`);
     let regex = new RegExp(expression, 'g');
     if (regex.test(changeInfo.url)) {
         chrome.tabs.sendMessage(tabId, {
             todo: request,
         });
+        return true;
     }
 }
 
 // If user activates tab..
 chrome.tabs.onActivated.addListener(function (activeInfo) {
-    chrome.tabs.get(activeInfo.tabId, function (tab) {
-        // Activate Main buttons
-        checkOnActivated(`.`, 'addInfoButtons', tab, activeInfo);
-        // Score..
-        checkOnActivated(
-            `\\/score\\/\\d+$`,
-            'checkTrophyImageFix',
-            tab,
-            activeInfo
-        );
-        // Profile..
-        checkOnActivated(`#profile\\/\\w+`, 'checkLodge', tab, activeInfo);
-        // Store..
-        checkOnActivated(`#store`, 'checkShop', tab, activeInfo);
-        // Store Bundles..
-        checkOnActivated(`#store\\/50`, 'showBundleDiscount', tab, activeInfo);
-        // Missions..
-        checkOnActivated(`#missions`, 'showMissions', tab, activeInfo);
-        // Missions..
-        checkOnActivated(`#competitions`, 'styleCompetition', tab, activeInfo);
-        // Expedition..
-        checkOnActivated(
-            `\\/expedition\\/\\d+$`,
-            'styleStatsLastTables',
-            tab,
-            activeInfo
-        );
-        checkOnActivated(
-            `\\/statistics(\\/latest)?$`,
-            'styleStatsLastTables',
-            tab,
-            activeInfo
-        );
-        checkOnActivated(
-            `\\/statistics\\/lifetime$`,
-            'styleStatsLifeTimeTables',
-            tab,
-            activeInfo
-        );
+    chrome.tabs.get(activeInfo.tabId, async function (tab) {
+
+        const webTab = await chrome.tabs.get(activeInfo.tabId);
+        console.log('If user activates tab..');
+        const isAllowed = webTab.url.startsWith(allowedUrl);
+
+        if(isAllowed) {
+            // Activate Main buttons
+            checkOnActivated(`.`, 'checkTabButtons', tab, activeInfo);
+
+            // Score..
+            checkOnActivated(
+              `\\/score\\/\\d+$`,
+              'checkTrophyImageFix',
+              tab,
+              activeInfo
+            );
+            // Profile..
+            checkOnActivated(`#profile\\/\\w+`, 'checkLodge', tab, activeInfo);
+            // Store..
+            checkOnActivated(`#store`, 'checkShop', tab, activeInfo);
+            // Store Bundles..
+            checkOnActivated(`#store\\/50`, 'showBundleDiscount', tab, activeInfo);
+            // Missions..
+            checkOnActivated(`#missions`, 'showMissions', tab, activeInfo);
+            // Missions..
+            checkOnActivated(`#competitions`, 'styleCompetition', tab, activeInfo);
+            // Expedition..
+            checkOnActivated(
+              `\\/expedition\\/\\d+$`,
+              'styleStatsLastTables',
+              tab,
+              activeInfo
+            );
+            checkOnActivated(
+              `\\/statistics(\\/latest)?$`,
+              'styleStatsLastTables',
+              tab,
+              activeInfo
+            );
+            checkOnActivated(
+              `\\/statistics\\/lifetime$`,
+              'styleStatsLifeTimeTables',
+              tab,
+              activeInfo
+            );
+        }
+
+
     });
 });
 
 function checkOnActivated(expression, request, tab, activeInfo) {
-    //console.log(`onActivated activated.. . ..`);
     let regex = new RegExp(expression, 'g');
     if (regex.test(tab.url)) {
         chrome.tabs.sendMessage(activeInfo.tabId, {
             todo: request,
         });
+        return true;
     }
 }
 
 // If user creates new tab with..
 chrome.tabs.onCreated.addListener(function (tab) {
     chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, updatedTab) {
-        if (changeInfo.status == 'complete' && tab.id === updatedTab.id) {
-            console.log(`On created..`);
-            // Activate Main buttons
-            checkOnCreated(`.`, 'addInfoButtons', tab, tabId);
+
+        if (updatedTab.url.startsWith(allowedUrl) && changeInfo.status == 'complete' && tab.id === updatedTab.id) {
+            console.log(`Tab created and updated.. and allowed?`, updatedTab.url.startsWith(allowedUrl));
             // Score..
             checkOnCreated(
                 `\\/score\\/\\d+$`,
@@ -292,14 +311,15 @@ chrome.tabs.onCreated.addListener(function (tab) {
 });
 
 function checkOnCreated(expression, request, tab, tabId) {
-    //console.log(`onCreated activated.. . ..`);
     let regex = new RegExp(expression, 'g');
     if (regex.test(tab.pendingUrl)) {
         setTimeout(function () {
             chrome.tabs.sendMessage(tabId, {
                 todo: request,
             });
+            return true;
         }, 500);
+        return true;
     }
 }
 
