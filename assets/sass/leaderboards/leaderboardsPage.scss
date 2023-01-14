@@ -1,0 +1,21 @@
+.leaderboard-alert {
+  float: right;
+}
+.leaderboard-info-message {
+  background-color: #d9edf7;
+  border-color: #bce8f1;
+  color: #3a87ad;
+  border-radius: 10px;
+  padding: 1px 7px;
+}
+.leaderboard-info-message.error {
+  background: red;
+  color: white;
+}
+.leaderboard-status {
+  background-color: #e7be3d !important;
+  color: #111111;
+}
+.leaderboard-section-end {
+  border-top: 2px solid #5a5a5a;
+}
