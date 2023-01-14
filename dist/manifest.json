@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "theHunter:Classic helper",
   "description": "Show in-game friends, discount items, ammo and trophies",
-  "version": "1.9.2",
+  "version": "1.9.3",
   "icons": {
     "16": "./images/icon16.png",
     "32": "./images/icon32.png",
@@ -42,7 +42,8 @@
         "./css/shop/owned/ownedPage.css",
         "./css/shop/ammo/ammoPage.css",
         "./css/shop/bundles/bundlesPage.css",
-        "./css/statistics/statisticsPage.css"
+        "./css/statistics/statisticsPage.css",
+        "./css/leaderboards/leaderboardsPage.css"
       ]
     }
   ],

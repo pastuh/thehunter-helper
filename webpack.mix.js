@@ -15,6 +15,7 @@ mix.setPublicPath('./')
 
     .sass('assets/sass/friends/friendsPage.scss', 'dist/css/friends')
     .js('assets/js/friends/friendsPage.js', 'dist/js/friends')
+    .js('assets/js/friends/friendsStatus.js', 'dist/js/friends')
 
     .sass('assets/sass/message/messagePage.scss', 'dist/css/message')
     .js('assets/js/message/messagePage.js', 'dist/js/message')
@@ -55,6 +56,9 @@ mix.setPublicPath('./')
         'assets/js/statistics/lifetime/animalsTable.js',
         'dist/js/statistics/lifetime'
     )
+
+    .sass('assets/sass/leaderboards/leaderboardsPage.scss', 'dist/css/leaderboards')
+    .js('assets/js/leaderboards/leaderboardsPage.js', 'dist/js/leaderboards')
 
     .sass('assets/sass/scoresheet/scoresheetPage.scss', 'dist/css/scoresheet')
     .js('assets/js/scoresheet/scoresheetPage.js', 'dist/js/scoresheet')

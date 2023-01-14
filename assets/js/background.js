@@ -122,6 +122,12 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                     'styleStatsLifeTimeTables',
                     activeTabs[0]
                 );
+                // Leaderboards Score..
+                checkOnMessage(
+                  `#leaderboards\\/score\\/\\d+$`,
+                  'showLeaderboardGameType',
+                  activeTabs[0]
+                );
             }
         );
         sendResponse({status: 'ok'});
@@ -182,6 +188,13 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, updatedTab) {
         checkOnUpdated(
           `\\/statistics\\/lifetime$`,
           'styleStatsLifeTimeTables',
+          tabId,
+          changeInfo
+        );
+        // Leaderboards Score..
+        checkOnUpdated(
+          `#leaderboards\\/score\\/\\d+$`,
+          'showLeaderboardGameType',
           tabId,
           changeInfo
         );
@@ -248,6 +261,13 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
               tab,
               activeInfo
             );
+            // Leaderboards Score..
+            checkOnActivated(
+              `#leaderboards\\/score\\/\\d+$`,
+              'showLeaderboardGameType',
+              tab,
+              activeInfo
+            );
         }
 
 
@@ -305,6 +325,13 @@ chrome.tabs.onCreated.addListener(function (tab) {
                 'styleStatsLifeTimeTables',
                 tab,
                 tabId
+            );
+            // Leaderboards Score..
+            checkOnCreated(
+              `#leaderboards\\/score\\/\\d+$`,
+              'showLeaderboardGameType',
+              tab,
+              tabId
             );
         }
     });

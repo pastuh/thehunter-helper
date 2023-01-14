@@ -176,3 +176,9 @@ export function addOptionsCheckbox(btnId, btnMainClass, btnName, btnDescr, count
           .append(template);
     }
 }
+
+export function hideInfoMessage(element) {
+    $(element).fadeTo('slow', 0.01, function () {
+        $(element).remove();
+    });
+}

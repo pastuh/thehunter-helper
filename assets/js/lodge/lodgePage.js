@@ -1,6 +1,6 @@
 import {
     checkElementLoaded,
-    checkPageLoaded,
+    checkPageLoaded, hideInfoMessage,
 } from '../utilities/extension/helpers';
 
 export function addProfileLodges() {
@@ -44,7 +44,7 @@ async function checkLodges(id) {
 }
 
 async function countLodges(data) {
-    hideInfoMessage();
+    hideInfoMessage('.lodge-trophies-message');
 
     if (data[0].lodges.length) {
         const lodgeInfo = [];
@@ -66,7 +66,7 @@ async function countLodges(data) {
         );
 
         setTimeout(() => {
-            hideInfoMessage();
+            hideInfoMessage('.lodge-trophies-message');
         }, 5000);
         return;
     }
@@ -184,7 +184,7 @@ async function listTrophiesIds(data) {
         );
 
         setTimeout(() => {
-            hideInfoMessage();
+            hideInfoMessage('.lodge-trophies-message');
         }, 5000);
     }
     return trophyIds;
@@ -193,7 +193,7 @@ async function listTrophiesIds(data) {
 async function getTrophiesData(ids) {
     if (ids.length) {
         let name = $('#profile-header .handle .user-name')[0].innerText;
-        $('#profile_content').append('<div class="trophy-loader-zone"><div class="trophy-loader"></div><span>Loading.. (If loader stuck, try again)</span></div>');
+        $('#profile_content').append('<div class="trophy-loader-zone"><div class="trophy-loader"></div><span>Loading trophies..</span></div>');
 
         try {
             let data = await Promise.all(
@@ -204,6 +204,11 @@ async function getTrophiesData(ids) {
                         success: function (data) {
                             return data;
                         },
+                        statusCode: {
+                            500: function() {
+                                $('.trophy-loader-zone').html(`<div class="trophy-loader" style="border-color: red;"></div><span style='color: red;'>Error.. page reload required</span>`);
+                            }
+                        }
                     })
                 )
             );
@@ -217,14 +222,24 @@ async function getTrophiesData(ids) {
 
 async function listTrophiesPhoto(data) {
     if (typeof data !== 'undefined' && data.length) {
-        $('.trophy-loader-zone').remove();
+        let loader = $('.trophy-loader-zone');
 
         data.forEach((page) => {
+
             const regex = /https.*\\\/\w+\.jpg/gi;
             const found = page.match(regex);
 
             // If photo exist
             if (found !== null) {
+
+                // Check if possible to load data
+                if(loader.length && /animal_id":(\d+),/gi.exec(page) !== null) {
+                    $('.trophy-loader-zone').remove();
+                } else {
+                    $('.trophy-loader-zone').html(`<div class="trophy-loader" style="border-color: red;"></div><span style='color: red;'>Error.. Data not available</span>`);
+                    return false;
+                }
+
                 const trophyImage = found[0].replace(/\\\//gi, '/');
                 const finalImage =
                     trophyImage.slice(0, 27) +
@@ -275,10 +290,4 @@ async function listTrophiesPhoto(data) {
         // Nice scroll up
         //$('html, body').animate({ scrollTop : $('.trophy-image').offset().top - 60 }, 500);
     }
-}
-
-function hideInfoMessage() {
-    $(`.lodge-trophies-message`).fadeTo('slow', 0.01, function () {
-        $(`.lodge-trophies-message`).remove();
-    });
 }

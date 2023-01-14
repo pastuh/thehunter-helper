@@ -125,9 +125,11 @@ async function sortOverviews(missionData) {
 async function styleActivePacks() {
     $('.active-mission-block .mission-container').each(function () {
         const activeQuest = $(this).find('.mission-row').ignore('div').text().trim();
+        const activeQuestId = $(this).attr('data-id');
+
         missionPacksInfo.forEach((element, i) =>  {
 
-            if(activeQuest === element.currentMissionTitle ) {
+            if(activeQuest === element.currentMissionTitle && activeQuestId === element.missionId) {
 
                 $(this).parent().attr('data-sid', element.animalName);
                 let overviewRaw = $(this).find('.mission-row');
@@ -191,9 +193,11 @@ async function styleAvailablePacks() {
 
     $('#missions-available .mission-container').each(function () {
         const activeQuest = $(this).find('.mission-row').ignore('div').text().trim();
+        const activeQuestId = $(this).attr('data-id');
+
         missionPacksInfo.forEach((element, i) =>  {
 
-            if(activeQuest === element.currentMissionTitle ) {
+            if(activeQuest === element.currentMissionTitle && activeQuestId === element.missionId) {
 
                 $(this).parent().attr('data-sid', element.animalName);
                 let overviewRaw = $(this).find('.mission-row');
@@ -271,6 +275,9 @@ async function styleMissionPacks() {
 
         let availableMissionRow = availableMission.find('.mission-row');
         // console.log(availableMissionRow);
+
+        // Mission ID
+        let missionId = availableMissionRow.parent().attr('data-id');
 
         // Available mission Title
         let currentMissionTitle;
@@ -412,6 +419,7 @@ async function styleMissionPacks() {
                 currentMissionTitle = $(obj).text().trim();
 
                 missionPacksInfo.push({
+                    missionId,
                     currentMissionTitle,
                     overviewCompleted,
                     overviewTotal,
@@ -429,6 +437,7 @@ async function styleMissionPacks() {
         } else {
 
             missionPacksInfo.push({
+                missionId,
                 currentMissionTitle,
                 overviewCompleted,
                 overviewTotal,

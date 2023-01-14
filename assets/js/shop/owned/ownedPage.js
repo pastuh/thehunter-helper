@@ -19,7 +19,7 @@ export function addOwnedInteractionCheckbox() {
 
     addOptionsCheckbox('ownedItemsHidden', 'option-owned', 'Hide owned items', description, true);
 
-    $('#ownedItemsHidden').on('change', function (e) {
+    $('#ownedItemsHidden').off('change').on('change', function (e) {
         hideOwnedItems(e);
     });
 }
@@ -98,7 +98,7 @@ function setOwnedItemsVisibility(needHideItem) {
 
     if (needHideItem && !ammoSelected) {
         console.log(`checking for hidden items`);
-        $('.store-pagination a').on('click', function () {
+        $('.store-pagination a').off('click').on('click', function () {
             console.log(`owned checker activated.`);
             checkHideOwnedItems();
         });

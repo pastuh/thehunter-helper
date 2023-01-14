@@ -1,4 +1,6 @@
 // Inject in to page something (allows manipulate DOM)
+import {addFriendsStatus, showOnlineFriends} from './friends/friendsStatus';
+
 let page = $('body');
 
 import {
@@ -31,6 +33,7 @@ import {
 } from "./statistics/last/optionsPage";
 import { calculateBundle } from './shop/bundles/bundlesPage';
 import { showSalePrice } from './shop/price';
+import { addLeaderboardGameType } from './leaderboards/leaderboardsPage';
 
 // Activated after page refresh
 chrome.runtime.sendMessage({
@@ -81,6 +84,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             triggerShopSearch();
         });
     }
+    if (request.todo === 'showLeaderboardGameType') {
+        addLeaderboardGameType();
+    }
 
     sendResponse({status: 'ok'});
     return true;
@@ -92,6 +98,12 @@ function showInfoButtons() {
     checkPageLoaded(function () {
         addSeasonInfo();
         setHunterOptions();
+
+        addFriendsStatus();
+        // Show online friends scroll module
+        $('#statusbar-container span.friends').on('click', function () {
+            showOnlineFriends();
+        });
 
         addInteractionBtn('btnFriends', 'Show In-game friends');
         addInteractionBtn('btnMessage', 'Read new messages');

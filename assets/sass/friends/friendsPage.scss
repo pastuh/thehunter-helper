@@ -1,3 +1,38 @@
+#friends-info {
+    line-height: 12px;
+    font-size: 14px;
+    color: #fff;
+    background: #00a3ce;
+    padding-top: 2px;
+    border-radius: 2px;
+    text-align: center;
+}
+#friends-info.center {
+    text-align: center;
+}
+#friends-dropdown .send-msg-online {
+    background: #7cb37a !important;
+}
+#friends-dropdown .mCSB_container {
+    top: auto !important;
+}
+#friends-dropdown .mCustomScrollBox {
+    position: inherit;
+    overflow: auto;
+}
+#friends-dropdown .mCSB_scrollTools .mCSB_draggerRail {
+    width: 24px;
+}
+#friends-dropdown .mCSB_dragger_bar {
+    width: 10px;
+    background: #e7be3d;
+}
+#friends-dropdown #mCSB_1_scrollbar_vertical {
+    visibility: hidden !important;
+}
+#friends-dropdown .mCSB_scrollTools.mCSB_scrollTools_vertical {
+    display: none !important;
+}
 #fmodule {
     position: absolute !important;
     z-index: 999;
