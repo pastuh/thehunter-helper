@@ -86,6 +86,10 @@ async function showLodges(data) {
             id: 846,
             url: 'https://static.thehunter.com/static/img/items/256/tropical_lodge.png',
         },
+        {
+            id: 1149,
+            url: 'https://static.thehunter.com/static/img/items/256/texas_trophy_lodge.png',
+        },
     ];
 
     if ($('#pending-friend-requests').length && !$('#lodgescontent').length) {
@@ -114,7 +118,7 @@ async function showLodges(data) {
 
                         let lodgeSize = ''
                         let lodgeSpace = '';
-                        if(data.length > 32) {
+                        if (data.length > 32) {
                             lodgeSpace = 'lodge-adjust';
                             lodgeSize = 'lodge-huge';
                         } else if (data.length > 26) {
@@ -205,7 +209,7 @@ async function getTrophiesData(ids) {
                             return data;
                         },
                         statusCode: {
-                            500: function() {
+                            500: function () {
                                 $('.trophy-loader-zone').html(`<div class="trophy-loader" style="border-color: red;"></div><span style='color: red;'>Error.. page reload required</span>`);
                             }
                         }
@@ -233,7 +237,7 @@ async function listTrophiesPhoto(data) {
             if (found !== null) {
 
                 // Check if possible to load data
-                if(loader.length && /animal_id":(\d+),/gi.exec(page) !== null) {
+                if (loader.length && /animal_id":(\d+),/gi.exec(page) !== null) {
                     $('.trophy-loader-zone').remove();
                 } else {
                     $('.trophy-loader-zone').html(`<div class="trophy-loader" style="border-color: red;"></div><span style='color: red;'>Error.. Data not available</span>`);
@@ -257,21 +261,18 @@ async function listTrophiesPhoto(data) {
                 <div class="trophy-image trophy-${animal_id}"><img src="${finalImage}"><a class="trophy-link" href="https://www.thehunter.com/#profile/${name}/score/${animal_id}" target="_blank">${new Date(
                     confirmTime * 1000
                 )
-                    .toISOString()
-                    .slice(0, 19)
-                    .replace('T', ' ')}</a></div>
+                        .toISOString()
+                        .slice(0, 19)
+                        .replace('T', ' ')}</a></div>
             `);
 
                 $(`.trophy-${animal_id}`).on('click', () => {
                     $('.trophy-text').html(
-                        `Shot this <span class="trophy-mark">${
-                            weight !== 'null' ? weight / 1000 : '...'
-                        } kg</span> beauty from <span class="trophy-mark">${
-                            shot_distance !== 'null'
-                                ? shot_distance / 1000
-                                : 'unknown'
-                        } m</span> distance. Score was <span class="trophy-mark">${
-                            score !== 'null' ? score : 'unknown'
+                        `Shot this <span class="trophy-mark">${weight !== 'null' ? weight / 1000 : '...'
+                        } kg</span> beauty from <span class="trophy-mark">${shot_distance !== 'null'
+                            ? shot_distance / 1000
+                            : 'unknown'
+                        } m</span> distance. Score was <span class="trophy-mark">${score !== 'null' ? score : 'unknown'
                         }</span>`
                     );
                     $('#trophy-overlay').slideDown('fast');
