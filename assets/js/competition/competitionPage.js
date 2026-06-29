@@ -1,4 +1,27 @@
 import {checkElementLoaded, checkPageLoaded} from '../utilities/extension/helpers';
+import {
+    buildLocalizedSpeciesMap,
+    getSpeciesAvatarUrl,
+    setCompetitionAnimalImage,
+} from '../utilities/speciesImage';
+
+export {setCompetitionAnimalImage};
+
+function getFilterButtonSpeciesName(button) {
+    const dataName = $(button).attr('data-name');
+
+    if (dataName) {
+        return dataName.trim();
+    }
+
+    const textNode = button.childNodes[0];
+
+    if (textNode && textNode.nodeValue) {
+        return textNode.nodeValue.trim();
+    }
+
+    return $(button).clone().children().remove().end().text().trim();
+}
 
 export function activateCompetitionStyle() {
     checkElementLoaded('#competitions-filter', function () {
@@ -6,21 +29,16 @@ export function activateCompetitionStyle() {
             !$('body').find('#competitions-filter .competition-style-animal')
                 .length
         ) {
-            let elementTarget = $('body').find('#competitions-filter a');
-            if (elementTarget.length) {
+            buildLocalizedSpeciesMap();
+
+            let elementTarget = $('body').find('#competitions-filter a');            if (elementTarget.length) {
                 elementTarget.each(function () {
                     let target = $(this).find('button');
-                    let animalTitle = setCompetitionAnimalImage(target);
+                    let animalSrc = getSpeciesAvatarUrl(target);
 
-                    if (animalTitle.indexOf('multi') >= 0) {
-                        $(this).append(
-                            `<img class="competition-style-animal" src="https://static.thehunter.com/static/img/items/256/hunting_horn_01.png">`
-                        );
-                    } else {
-                        $(this).append(
-                            `<img class="competition-style-animal" src="https://static.thehunter.com/static/img/statistics/${animalTitle}.png">`
-                        );
-                    }
+                    $(this).append(
+                        `<img class="competition-style-animal" src="${animalSrc}">`
+                    );
 
                     let targetCount = $(this).find('.filter-amount').css({
                         background: '#ccc',
@@ -51,78 +69,6 @@ export function activateCompetitionStyle() {
             }
         }
     });
-}
-
-// Added image for each animal in list
-export function setCompetitionAnimalImage(title) {
-    let animalTitle = title;
-
-    if (typeof animalTitle === 'object') {
-        animalTitle = title.attr('data-name');
-    }
-
-    if (animalTitle === 'Roe-bit') {
-        animalTitle = 'roebit';
-    } else {
-        animalTitle = animalTitle.replace(/\s+|-/g, '_').toLowerCase();
-    }
-
-    if (animalTitle.indexOf('(typical') >= 0) {
-        animalTitle = animalTitle.replace(/_\(typical\)/g, '');
-    }
-
-    if (animalTitle.indexOf('non_typical') >= 0) {
-        animalTitle = animalTitle.replace(/\(|\)/g, '');
-        return animalTitle;
-    }
-
-    if (animalTitle.indexOf('grey_wolf') >= 0) {
-        animalTitle = animalTitle.replace(/grey_/g, '');
-        return animalTitle;
-    }
-
-    if (animalTitle.indexOf('eurasian_lynx') >= 0) {
-        animalTitle = animalTitle.replace(/eurasian_lynx/g, 'lynx_eurasian');
-        return animalTitle;
-    }
-
-    if (animalTitle.indexOf('northern_pintail') >= 0) {
-        animalTitle = animalTitle.replace(/northern_pintail/g, 'pintail');
-        return animalTitle;
-    }
-
-    if (animalTitle.indexOf('rock_ptarmigan') >= 0) {
-        animalTitle = animalTitle.replace(/rock_ptarmigan/g, 'ptarmigan_rock');
-        return animalTitle;
-    }
-
-    if (animalTitle.indexOf('willow_ptarmigan') >= 0) {
-        animalTitle = animalTitle.replace(
-            /willow_ptarmigan/g,
-            'ptarmigan_willow'
-        );
-        return animalTitle;
-    }
-
-    if (animalTitle.indexOf('white_tailed_ptarmigan') >= 0) {
-        animalTitle = animalTitle.replace(
-            /white_tailed_ptarmigan/g,
-            'ptarmigan_white_tailed'
-        );
-        return animalTitle;
-    }
-
-    if (animalTitle === 'duck') {
-        animalTitle = 'mallard';
-        return animalTitle;
-    }
-
-    if (animalTitle === 'ptarmigan') {
-        animalTitle = 'ptarmigan_willow';
-        return animalTitle;
-    }
-
-    return animalTitle;
 }
 
 export async function getServerCompetitions() {
@@ -159,7 +105,7 @@ export function markActivatedAnimals() {
         if (enrolledTags.length > 0) {
             allCompetitions.each(function () {
                 let target = $(this);
-                let title = $(this)[0].childNodes[0].nodeValue.trim();
+                let title = getFilterButtonSpeciesName(this);
 
                 let currentCount = target.find('.filter-amount');
                 currentCount.removeClass('animalEnrolled_counter');
@@ -181,7 +127,7 @@ export function tagSelectedAnimal(element) {
     let selectedTag = $(element.target).text();
     let allCompetitions = $('#competitions-filter button');
     allCompetitions.each(function () {
-        let title = $(this)[0].childNodes[0].nodeValue.trim();
+        let title = getFilterButtonSpeciesName(this);
         if (title === selectedTag) {
             $(this).click();
             return false;

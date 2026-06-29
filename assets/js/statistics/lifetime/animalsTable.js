@@ -9,7 +9,7 @@ import {
     hideZeroCount,
     zeroCountColor,
 } from '../last/helpers';
-import { setCompetitionAnimalImage } from '../../competition/competitionPage';
+import { getSpeciesAvatarUrl } from '../../utilities/speciesImage';
 
 export function styleAnimalsLifeTimeTable() {
     let originalAnimalsTable = $('.animal_stats.table');
@@ -27,8 +27,7 @@ export function styleAnimalsLifeTimeTable() {
         originalAnimalsData.each(function (index, element) {
             let animalTitle = $(element).find('.animal_item').text().trim();
 
-            let animalSrc = setCompetitionAnimalImage(animalTitle);
-            animalSrc = `https://static.thehunter.com/static/img/statistics/${animalSrc}.png`;
+            let animalSrc = getSpeciesAvatarUrl(animalTitle);
 
             let spottedInfo = $(element).find('.data_item').eq(0).text().trim();
             let trackedInfo = $(element).find('.data_item').eq(1).text().trim();

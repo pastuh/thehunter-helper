@@ -21,10 +21,12 @@ import {
 	scrollToClickedCompetition, selectedAnimalIndicatorReset,
 	tagSelectedAnimal, updateTitleAllListedCompetitions
 } from "./competitionPage";
+import {augmentSpeciesMapFromApi} from "../utilities/speciesImage";
 
 export let serverData;
 export async function storeServerCompetitionData() {
 	serverData = await getServerCompetitions();
+	augmentSpeciesMapFromApi(serverData);
 }
 
 // INIT Competition functions Pause/Save

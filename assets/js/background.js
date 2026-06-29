@@ -3,6 +3,16 @@
 // Activated based on tab actions
 let allowedUrl = 'https://www.thehunter.com';
 
+function sendTabMessage(tabId, message) {
+    if (!tabId) {
+        return;
+    }
+
+    chrome.tabs.sendMessage(tabId, message).catch(() => {
+        // Content script not injected yet (page loading, SPA nav, or extension reload).
+    });
+}
+
 try {
     // Only for specific page
     let allowedUrl = 'https://www.thehunter.com';
@@ -76,69 +86,63 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         request.subject === 'DOMInfo'
     ) {
         console.log('Message from foreground');
-        // Retrieve all tabs
-        chrome.tabs.query(
-            { active: true, currentWindow: true },
-            function (activeTabs) {
-                // Activate Main buttons
-                checkOnMessage(`.`, 'checkTabButtons', activeTabs[0]);
-                // If plugin was Activated while opening Scoresheet..
-                checkOnMessage(
-                    `\\/score\\/\\d+$`,
-                    'checkTrophyImageFix',
-                    activeTabs[0]
-                );
-                // If plugin was Activated while opening Profle..
-                checkOnMessage(`#profile\\/\\w+`, 'checkLodge', activeTabs[0]);
-                // If plugin was Activated while opening Store..
-                checkOnMessage(`#store`, 'checkShop', activeTabs[0]);
-                // If plugin was Activated while opening Store Bundles..
-                checkOnMessage(
-                    `#store\\/50`,
-                    'showBundleDiscount',
-                    activeTabs[0]
-                );
-                // If plugin was Activated while opening Mission..
-                checkOnMessage(`#missions`, 'showMissions', activeTabs[0]);
-                // If plugin was Activated while opening Competitions..
-                checkOnMessage(
-                    `#competitions`,
-                    'styleCompetition',
-                    activeTabs[0]
-                );
-                // If plugin was Activated while opening Expedition..
-                checkOnMessage(
-                    `\\/expedition\\/\\d+$`,
-                    'styleStatsTables',
-                    activeTabs[0]
-                );
-                checkOnMessage(
-                    `\\/statistics(\\/latest)?$`,
-                    'styleStatsLastTables',
-                    activeTabs[0]
-                );
-                checkOnMessage(
-                    `\\/statistics\\/lifetime$`,
-                    'styleStatsLifeTimeTables',
-                    activeTabs[0]
-                );
-                // Leaderboards Score..
-                checkOnMessage(
-                  `#leaderboards\\/score\\/\\d+$`,
-                  'showLeaderboardGameType',
-                  activeTabs[0]
-                );
-            }
-        );
+        const tab = sender.tab;
+
+        if (tab && tab.url) {
+            checkOnMessage(`.`, 'checkTabButtons', tab);
+            checkOnMessage(
+                `\\/score\\/\\d+$`,
+                'checkTrophyImageFix',
+                tab
+            );
+            checkOnMessage(`#profile\\/\\w+`, 'checkLodge', tab);
+            checkOnMessage(`#store`, 'checkShop', tab);
+            checkOnMessage(
+                `#store\\/50`,
+                'showBundleDiscount',
+                tab
+            );
+            checkOnMessage(`#missions`, 'showMissions', tab);
+            checkOnMessage(
+                `#competitions`,
+                'styleCompetition',
+                tab
+            );
+            checkOnMessage(
+                `\\/expedition\\/\\d+$`,
+                'styleStatsTables',
+                tab
+            );
+            checkOnMessage(
+                `\\/statistics(\\/latest)?$`,
+                'styleStatsLastTables',
+                tab
+            );
+            checkOnMessage(
+                `\\/statistics\\/lifetime$`,
+                'styleStatsLifeTimeTables',
+                tab
+            );
+            checkOnMessage(
+                `#leaderboards\\/score\\/\\d+$`,
+                'showLeaderboardGameType',
+                tab
+            );
+        }
+
         sendResponse({status: 'ok'});
         return true;
     }
 });
 
 function checkOnMessage(expression, request, selectedTab) {
+    if (!selectedTab || !selectedTab.url) {
+        return false;
+    }
+
     let regex = new RegExp(expression, 'g');
     if (regex.test(selectedTab.url)) {
-        chrome.tabs.sendMessage(selectedTab.id, {
+        sendTabMessage(selectedTab.id, {
             todo: request,
         });
         return true;
@@ -204,9 +208,13 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, updatedTab) {
 });
 
 function checkOnUpdated(expression, request, tabId, changeInfo) {
+    if (!changeInfo.url) {
+        return false;
+    }
+
     let regex = new RegExp(expression, 'g');
     if (regex.test(changeInfo.url)) {
-        chrome.tabs.sendMessage(tabId, {
+        sendTabMessage(tabId, {
             todo: request,
         });
         return true;
@@ -275,9 +283,13 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
 });
 
 function checkOnActivated(expression, request, tab, activeInfo) {
+    if (!tab || !tab.url) {
+        return false;
+    }
+
     let regex = new RegExp(expression, 'g');
     if (regex.test(tab.url)) {
-        chrome.tabs.sendMessage(activeInfo.tabId, {
+        sendTabMessage(activeInfo.tabId, {
             todo: request,
         });
         return true;
@@ -338,10 +350,14 @@ chrome.tabs.onCreated.addListener(function (tab) {
 });
 
 function checkOnCreated(expression, request, tab, tabId) {
+    if (!tab || !tab.pendingUrl) {
+        return false;
+    }
+
     let regex = new RegExp(expression, 'g');
     if (regex.test(tab.pendingUrl)) {
         setTimeout(function () {
-            chrome.tabs.sendMessage(tabId, {
+            sendTabMessage(tabId, {
                 todo: request,
             });
             return true;

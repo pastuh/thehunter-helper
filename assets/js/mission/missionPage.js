@@ -1,5 +1,5 @@
 import {checkElementDisappeared, checkElementLoaded} from '../utilities/extension/helpers';
-import {setCompetitionAnimalImage} from "../competition/competitionPage";
+import {getSpeciesAvatarUrl} from "../utilities/speciesImage";
 
 let missionPacksInfo = [];
 
@@ -358,8 +358,7 @@ async function styleMissionPacks() {
           );
 
         // Left info Overview
-        let animalSrc = setCompetitionAnimalImage(animalName.trim());
-        animalSrc = `https://static.thehunter.com/static/img/statistics/${animalSrc}.png`;
+        let animalSrc = getSpeciesAvatarUrl(animalName.trim());
 
         overviewRaw.append(`
                 <div class="mission-info-data">
@@ -574,8 +573,7 @@ function activateFavouriteStyle() {
           );
 
         // Left info Overview
-        let animalSrc = setCompetitionAnimalImage(animalName.trim());
-        animalSrc = `https://static.thehunter.com/static/img/statistics/${animalSrc}.png`;
+        let animalSrc = getSpeciesAvatarUrl(animalName.trim());
 
         overviewRaw.append(`
                 <div class="mission-info-data">

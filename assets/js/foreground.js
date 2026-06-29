@@ -40,7 +40,7 @@ chrome.runtime.sendMessage({
     from: 'foreground',
     subject: 'DOMInfo',
     todo: 'checkUrlFunctions',
-});
+}).catch(() => {});
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.todo === 'checkTabButtons') {
