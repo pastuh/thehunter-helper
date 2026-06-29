@@ -1,9 +1,13 @@
 {
   "private": true,
+  "overrides": {
+    "webpack": "5.88.2",
+    "webpack-cli": "4.7.2"
+  },
   "scripts": {
-    "local": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --env=local --config=node_modules/laravel-mix/setup/webpack.config.js",
-    "staging": "cross-env NODE_ENV=staging node_modules/webpack/bin/webpack.js --progress --env=staging --config=node_modules/laravel-mix/setup/webpack.config.js",
-    "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --env=production --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "local": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --env=local --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "staging": "cross-env NODE_ENV=staging node_modules/webpack/bin/webpack.js --env=staging --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --env=production --config=node_modules/laravel-mix/setup/webpack.config.js",
     "dev": "npm run local",
     "prod": "npm run production",
     "watch": "npm run local -- --watch"
